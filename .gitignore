@@ -1,0 +1,20 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local uploads / generated files
+uploads/
+public/uploads/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

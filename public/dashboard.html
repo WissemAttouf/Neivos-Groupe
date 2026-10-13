@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEIVOS GROUPE | Mon espace client</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0A0D14; color: #F9FAFB; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body.light-mode { background-color: #F3F6FC; color: #1E293B; }
+        .glass-header { background: rgba(10, 13, 20, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(31, 42, 62, 0.6); position: fixed; top: 0; width: 100%; z-index: 100; }
+        .hero-gradient-text { background: linear-gradient(135deg, #3B82F6, #8B5CF6, #06B6D4); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 3s linear infinite; }
+        @keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        .sidebar { position: fixed; left: 0; top: 70px; width: 280px; height: calc(100vh - 70px); background: #0F1420; border-right: 1px solid #1F2A3E; transition: all 0.3s; z-index: 90; overflow-y: auto; }
+        .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px 20px; margin: 4px 12px; border-radius: 12px; transition: all 0.2s; cursor: pointer; color: #9CA3AF; }
+        .sidebar-link:hover, .sidebar-link.active { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
+        .main-content { margin-left: 280px; padding-top: 80px; }
+        .card-tech { background: linear-gradient(145deg, #111827, #0F1420); border: 1px solid #1F2A3E; border-radius: 20px; transition: all 0.3s; }
+        body.light-mode .card-tech { background: #FFFFFF; border: 1px solid #E2E8F0; }
+        .card-tech:hover { transform: translateY(-5px); border-color: #3B82F6; box-shadow: 0 20px 35px -12px rgba(59, 130, 246, 0.25); }
+        .dashboard-card { background: linear-gradient(145deg, #111827, #0F1420); border: 1px solid #1F2A3E; border-radius: 20px; padding: 20px; transition: all 0.3s; }
+        .dashboard-card:hover { transform: translateY(-3px); border-color: #3B82F6; }
+        .chat-message { padding: 12px; border-radius: 16px; margin-bottom: 12px; max-width: 85%; position: relative; }
+        .chat-message.admin { background: rgba(59, 130, 246, 0.15); border-left: 3px solid #3B82F6; margin-right: auto; }
+        .chat-message.user { background: rgba(139, 92, 246, 0.15); border-right: 3px solid #8B5CF6; margin-left: auto; text-align: right; }
+        .delete-message { position: absolute; top: 5px; right: 5px; cursor: pointer; opacity: 0; transition: opacity 0.2s; color: #ef4444; font-size: 12px; }
+        .chat-message:hover .delete-message { opacity: 1; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: all 0.3s; }
+        .modal.show { visibility: visible; opacity: 1; }
+        .modal-content { max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; background: #111827; border-radius: 32px; border: 1px solid #2A3143; padding: 32px; }
+        .form-input { background: #0F1219; border: 1px solid #1F2A3E; color: #F3F4F6; border-radius: 14px; padding: 14px 18px; width: 100%; }
+        .form-input:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        .submit-btn { background: linear-gradient(95deg, #3B82F6, #8B5CF6); transition: all 0.3s; border-radius: 14px; font-weight: 600; cursor: pointer; color: white; padding: 14px; width: 100%; border: none; }
+        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(59,130,246,0.4); }
+        .service-item { padding: 20px; border-radius: 16px; cursor: pointer; transition: all 0.2s; }
+        .service-item:hover { background: rgba(59, 130, 246, 0.08); transform: translateY(-3px); }
+        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.mobile-open { transform: translateX(0); } .main-content { margin-left: 0; } }
+        .toast-notification { position: fixed; top: 80px; right: 20px; z-index: 1000; padding: 12px 24px; border-radius: 12px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .user-menu { position: relative; cursor: pointer; }
+        .user-dropdown { position: absolute; top: 100%; right: 0; background: #111827; border: 1px solid #2A3143; border-radius: 16px; padding: 8px 0; min-width: 200px; display: none; z-index: 200; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display: block; padding: 12px 20px; color: #9CA3AF; text-decoration: none; transition: background 0.2s; }
+        .user-dropdown a:hover { background: #1F2A3E; color: white; }
+        .theme-switch { cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(59,130,246,0.1); border: 1px solid #2A3143; }
+        .activity-item { padding: 12px; border-radius: 12px; background: rgba(17, 24, 39, 0.5); margin-bottom: 8px; }
+        .badge-pending { background: #F59E0B; color: #000; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+        .badge-approved { background: #10B981; color: #fff; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+        .badge-rejected { background: #EF4444; color: #fff; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+        .badge-completed { background: #3B82F6; color: #fff; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+    </style>
+</head>
+<body class="dark">
+
+    <header class="glass-header py-3">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <button id="mobileSidebarBtn" class="lg:hidden w-10 h-10 rounded-full bg-gray-800/50 border border-gray-700"><i class="fas fa-bars text-blue-500"></i></button>
+                <a href="/" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center"><span class="text-white font-bold text-lg">N</span></div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent hidden sm:inline">NEIVOS GROUPE</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="themeToggle" class="theme-switch"><i id="themeIcon" class="fas fa-moon text-blue-500"></i></button>
+                <div id="userMenu" class="user-menu">
+                    <div class="flex items-center gap-2 bg-gray-800/50 rounded-full px-3 py-1.5 border border-gray-700" onclick="toggleUserDropdown()">
+                        <i class="fas fa-user-circle text-blue-500 text-xl"></i>
+                        <span id="userNameDisplay" class="text-sm font-medium"></span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                    <div id="userDropdown" class="user-dropdown">
+                        <a href="#" onclick="showProfileModal(); return false;"><i class="fas fa-id-card mr-2"></i> Mon profil</a>
+                        <hr class="border-gray-700 my-1">
+                        <a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt mr-2 text-red-400"></i> <span class="text-red-400">Déconnexion</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="sidebar" class="sidebar">
+        <div class="p-5 border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"><i class="fas fa-user-circle text-2xl text-white"></i></div>
+                <div><p id="sidebarUserName" class="font-semibold">Client</p><p class="text-xs text-gray-500">Espace client</p></div>
+            </div>
+        </div>
+        <nav class="py-4">
+            <div class="sidebar-link active" data-section="dashboard"><i class="fas fa-tachometer-alt w-5 mr-3"></i> Tableau de bord</div>
+            <div class="sidebar-link" data-section="messages"><i class="fas fa-comments w-5 mr-3"></i> Messages <span id="badgeMessages" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span></div>
+            <div class="sidebar-link" data-section="services"><i class="fas fa-concierge-bell w-5 mr-3"></i> Services</div>
+            <div class="sidebar-link" data-section="profile"><i class="fas fa-user-cog w-5 mr-3"></i> Mon profil</div>
+        </nav>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <!-- DASHBOARD -->
+        <div id="dashboardSection">
+            <section class="relative py-12"><div class="container mx-auto px-6 text-center"><h1 class="text-4xl md:text-5xl font-bold">Bienvenue, <span id="welcomeName" class="hero-gradient-text">Client</span></h1><p class="text-gray-400 mt-3">Votre espace personnel.</p></div></section>
+            <section class="py-6 px-6"><div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+                <div class="dashboard-card text-center"><i class="fas fa-envelope text-3xl text-purple-500 mb-2"></i><div id="kpiMessages" class="text-2xl font-bold">0</div><div class="text-gray-400 text-sm">Messages non lus</div></div>
+                <div class="dashboard-card text-center"><i class="fas fa-calendar-check text-3xl text-green-400 mb-2"></i><div id="kpiServices" class="text-2xl font-bold">0</div><div class="text-gray-400 text-sm">Services validés</div></div>
+            </div></section>
+            <section class="py-6 px-6 max-w-6xl mx-auto"><div class="dashboard-card"><h3 class="text-xl font-bold mb-4"><i class="fas fa-history mr-2"></i> Activités récentes</h3><div id="recentActivities" class="space-y-2 max-h-64 overflow-y-auto"></div></div></section>
+        </div>
+
+        <!-- MESSAGES -->
+        <div id="messagesSection" class="hidden px-6">
+            <div class="dashboard-card">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                    <h2 class="text-xl font-bold"><i class="fas fa-comments mr-2 text-blue-500"></i> Messagerie</h2>
+                    <button onclick="deleteAllMessages()" class="text-sm text-red-400 hover:text-red-300 px-3 py-1 rounded-lg bg-red-500/10"><i class="fas fa-trash-alt mr-1"></i> Tout supprimer</button>
+                </div>
+                <div id="chatMessages" class="h-96 overflow-y-auto mb-4 p-4 bg-gray-900/30 rounded-xl"></div>
+                <div class="flex gap-3"><input type="text" id="chatInput" placeholder="Écrivez votre message à l'administration..." class="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500"><button onclick="sendMessage()" class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 rounded-xl font-semibold hover:scale-105 transition"><i class="fas fa-paper-plane mr-2"></i> Envoyer</button></div>
+            </div>
+        </div>
+
+
+
+        <!-- SERVICES -->
+        <div id="servicesSection" class="hidden px-6">
+            <div class="text-center mb-8"><h2 class="text-3xl font-bold">Nos <span class="hero-gradient-text">Services</span></h2><p class="text-gray-400 mt-2">Découvrez nos services et accédez aux détails ou inscrivez-vous.</p></div>
+            <div id="dynamicServices" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+
+
+        <!-- PROFIL -->
+        <div id="profileSection" class="hidden px-6">
+            <div class="max-w-2xl mx-auto"><div class="dashboard-card"><h2 class="text-2xl font-bold mb-6 text-center hero-gradient-text">Mon profil</h2><div class="space-y-4"><div><label class="block text-sm font-medium text-gray-400 mb-1">Nom complet</label><input type="text" id="profileNom" class="form-input w-full"></div><div><label class="block text-sm font-medium text-gray-400 mb-1">Email</label><input type="email" id="profileEmail" class="form-input w-full bg-gray-700/50" readonly disabled></div><div><label class="block text-sm font-medium text-gray-400 mb-1">Téléphone</label><input type="tel" id="profileTelephone" class="form-input w-full"></div><div><label class="block text-sm font-medium text-gray-400 mb-1">Entreprise</label><input type="text" id="profileEntreprise" class="form-input w-full"></div><div class="flex gap-4 pt-4"><button onclick="updateProfile()" class="submit-btn py-2">Mettre à jour</button></div></div></div></div>
+        </div>
+
+
+    </div>
+
+    <!-- Modal Details -->
+    <div id="detailsModal" class="modal"><div class="modal-content"><h3 id="detailsModalTitle" class="text-2xl font-bold hero-gradient-text mb-4"></h3><div id="detailsModalContent" class="text-gray-300"></div><button onclick="closeModal('detailsModal')" class="mt-6 bg-gray-700 px-4 py-2 rounded-lg text-white">Fermer</button></div></div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let currentUser = null;
+        let token = localStorage.getItem('token');
+
+        function showNotification(message, isError = false) {
+            const notif = document.createElement('div');
+            notif.className = `toast-notification ${isError ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'}`;
+            notif.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i>${message}`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 4000);
+        }
+
+        async function checkAuth() {
+            if (!token) { window.location.href = '/'; return; }
+            try {
+                const res = await fetch(`${API_URL}/api/auth/verify`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.ok) { 
+                    const data = await res.json(); 
+                    currentUser = data.user; 
+                    updateUI(); 
+                    loadDashboard(); 
+                }
+                else { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/'; }
+            } catch(e) { window.location.href = '/'; }
+        }
+
+        function updateUI() {
+            if (!currentUser) return;
+            document.getElementById('userNameDisplay').innerText = currentUser.nom?.split(' ')[0] || '';
+            document.getElementById('sidebarUserName').innerHTML = escapeHtml(currentUser.nom || 'Client');
+            document.getElementById('welcomeName').innerHTML = escapeHtml(currentUser.nom?.split(' ')[0] || 'Client');
+            document.getElementById('profileNom').value = currentUser.nom || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            document.getElementById('profileTelephone').value = currentUser.telephone || '';
+            document.getElementById('profileEntreprise').value = currentUser.entreprise || '';
+        }
+
+        async function loadDashboard() {
+            await loadMessages();
+            await loadQuotesAndSubscriptions();
+            await loadActivities();
+            await loadDynamicServices();
+        }
+
+        async function loadMessages() {
+            const res = await fetch(`${API_URL}/api/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            const unreadCount = data.messages?.filter(m => m.sender === 'admin' && !m.is_read).length || 0;
+            document.getElementById('kpiMessages').innerText = unreadCount;
+            const bBadge = document.getElementById('badgeMessages');
+            if(unreadCount > 0) { bBadge.innerText = unreadCount; bBadge.classList.remove('hidden'); }
+            else { bBadge.classList.add('hidden'); }
+            
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+            container.innerHTML = data.messages?.map(m => `
+                <div class="chat-message ${m.sender}" data-message-id="${m.id}">
+                    <div class="font-semibold text-sm ${m.sender === 'admin' ? 'text-blue-400' : 'text-purple-400'}">${m.sender === 'admin' ? '👨‍💼 Administrateur' : '👤 Vous'}</div>
+                    <div class="mt-1">${escapeHtml(m.message)}</div>
+                    <div class="text-xs text-gray-500 mt-1">${new Date(m.created_at).toLocaleString()}</div>
+                    <div class="delete-message" onclick="deleteMessage(${m.id})"><i class="fas fa-trash-alt"></i></div>
+                </div>
+            `).join('') || '<div class="text-center text-gray-500 py-8">Aucun message</div>';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            try {
+                await fetch(`${API_URL}/api/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ message }) });
+                input.value = '';
+                loadMessages();
+            } catch(e) { showNotification('Erreur', true); }
+        }
+
+        async function deleteMessage(messageId) {
+            if (!confirm('Supprimer ce message ?')) return;
+            try {
+                await fetch(`${API_URL}/api/messages/${messageId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                loadMessages();
+                showNotification('Message supprimé');
+            } catch(e) { showNotification('Erreur', true); }
+        }
+
+        async function deleteAllMessages() {
+            if (!confirm('⚠️ Supprimer TOUS vos messages ?')) return;
+            try {
+                await fetch(`${API_URL}/api/messages/all`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                loadMessages();
+                showNotification('Tous messages supprimés');
+            } catch(e) {}
+        }
+
+        async function loadProposals() {
+            const res = await fetch(`${API_URL}/api/proposals`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            document.getElementById('kpiProposals').innerText = data.proposals?.length || 0;
+            const container = document.getElementById('proposalsContainer');
+            if (container) container.innerHTML = data.proposals?.map(p => `<div class="card-tech p-6 cursor-pointer hover:border-blue-500 transition" onclick="alert('Proposition: ${p.title}\\nUn expert vous contactera sous 24h.')"><i class="${p.icon || 'fas fa-lightbulb'} text-3xl text-blue-500 mb-3 block"></i><h3 class="font-bold text-lg mb-2">${escapeHtml(p.title)}</h3><p class="text-gray-400 text-sm">${escapeHtml(p.description)}</p></div>`).join('') || '<div class="col-span-3 text-center text-gray-500 py-8">Aucune proposition</div>';
+        }
+
+        async function loadQuotesAndSubscriptions() {
+            const quotesRes = await fetch(`${API_URL}/api/quotes`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const subsRes = await fetch(`${API_URL}/api/user/subscriptions`, { headers: { 'Authorization': `Bearer ${token}` } });
+            
+            const quotesData = await quotesRes.json();
+            const subsData = await subsRes.json();
+            
+            const subsList = Array.isArray(subsData.subscriptions) ? subsData.subscriptions : [];
+            const quotesList = Array.isArray(quotesData.quotes) ? quotesData.quotes : [];
+            
+            const countActiveServices = subsList.filter(s => s.status === 'completed' || s.status === 'approved').length;
+            document.getElementById('kpiServices').innerText = countActiveServices;
+            document.getElementById('kpiQuotes').innerText = quotesList.length + subsList.length;
+            
+            const container = document.getElementById('quotesContainer');
+            let html = '';
+            
+            quotesList.forEach(q => {
+                html += `<div class="card-tech p-4"><div class="flex justify-between"><span class="font-bold">Devis: ${escapeHtml(q.service_type)}</span><span class="text-blue-400">${parseInt(q.montant_ht).toLocaleString()} € HT</span></div><div class="text-sm text-gray-400">Durée: ${q.duree_mois} mois</div><div class="text-xs text-gray-500 mt-1">${new Date(q.created_at).toLocaleDateString()}</div></div>`;
+            });
+            subsList.forEach(s => {
+                html += `<div class="card-tech p-4 border-l-4 ${s.status === 'pending' ? 'border-yellow-500' : 'border-blue-500'}">
+                    <div class="flex justify-between items-center"><span class="font-bold">Inscription: ${escapeHtml(s.service_name || s.message.split(': ')[1] || 'Service')}</span> <span class="badge-${s.status}">${s.status}</span></div>
+                    <div class="text-xs text-gray-400 mt-1">${new Date(s.created_at).toLocaleString()}</div>
+                    ${s.admin_note ? `<div class="mt-2 text-sm text-gray-300 border-t border-gray-700 pt-2"><b>Note Admin:</b> ${escapeHtml(s.admin_note)}</div>` : ''}
+                </div>`;
+            });
+            
+            if(html === '') html = '<div class="text-center text-gray-500 py-8">Aucun devis ni inscription</div>';
+            container.innerHTML = html;
+        }
+
+        let allDynamicServices = [];
+        let allDynamicTechs = [];
+
+        async function loadDynamicServices() {
+            try {
+                const res = await fetch(`${API_URL}/api/services`);
+                const data = await res.json();
+                allDynamicServices = data.services || [];
+                const container = document.getElementById('dynamicServices');
+                container.innerHTML = allDynamicServices.map(s => `
+                    <div class="card-tech p-6 text-center">
+                        <i class="${s.icon} text-4xl text-purple-500 mb-4 block"></i>
+                        <h3 class="text-xl font-bold mb-2">${escapeHtml(s.title)}</h3>
+                        <p class="text-gray-400 text-sm mb-4">${escapeHtml(s.description)}</p>
+                        <div class="flex gap-2 justify-center flex-wrap">
+                            <button onclick="showDetailsModal('service', ${s.id})" class="bg-gray-700/50 hover:bg-gray-700 px-3 py-1.5 rounded-lg text-sm transition text-white">Détails</button>
+                            <button onclick="subscribeToService('${escapeHtml(s.title)}')" class="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-sm font-semibold transition text-white">S'inscrire</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+
+        async function loadDynamicTechnologies() {
+            try {
+                const res = await fetch(`${API_URL}/api/technologies`);
+                const data = await res.json();
+                allDynamicTechs = data.technologies || [];
+                const container = document.getElementById('dynamicTechnologies');
+                container.innerHTML = allDynamicTechs.map(t => `
+                    <div class="card-tech p-6 text-center">
+                        <i class="${t.icon} text-4xl text-blue-500 mb-4 block"></i>
+                        <h3 class="text-xl font-bold mb-2">${escapeHtml(t.title)}</h3>
+                        <p class="text-gray-400 text-sm mb-4">${escapeHtml(t.description)}</p>
+                        <button onclick="showDetailsModal('tech', ${t.id})" class="bg-gray-700/50 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm transition text-white w-full">Détails</button>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+
+        function showDetailsModal(type, id) {
+            const item = type === 'tech' ? allDynamicTechs.find(t => t.id === id) : allDynamicServices.find(s => s.id === id);
+            if(item) {
+                document.getElementById('detailsModalTitle').innerHTML = `<i class="${item.icon} mr-2"></i>${escapeHtml(item.title)}`;
+                document.getElementById('detailsModalContent').innerHTML = `
+                    <p class="mb-4 text-lg">${escapeHtml(item.description)}</p>
+                    <hr class="my-4 border-gray-700">
+                    <h4 class="font-bold mb-2 text-white">Détails Complets :</h4>
+                    <p class="whitespace-pre-line">${escapeHtml(item.details || 'Aucun détail supplémentaire pour le moment.')}</p>
+                    ${item.price ? `<div class="mt-6 p-4 bg-gray-800/50 rounded-lg inline-block border border-gray-700"><span class="text-gray-400">Tarif / Formule : </span><span class="text-green-400 font-bold ml-2">${escapeHtml(item.price)}</span></div>` : ''}
+                `;
+                openModal('detailsModal');
+            }
+        }
+
+        async function loadActivities() {
+            const res = await fetch(`${API_URL}/api/user/activities`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const data = await res.json();
+            const container = document.getElementById('activitiesList');
+            if (container) container.innerHTML = data.activities?.map(a => `<div class="activity-item"><i class="${a.icon || 'fas fa-clock'} mr-2 text-blue-400"></i> ${escapeHtml(a.action)}<div class="text-xs text-gray-500 mt-1">${new Date(a.created_at).toLocaleString()}</div></div>`).join('') || '<div class="text-center text-gray-500 py-8">Aucune activité</div>';
+        }
+
+        async function updateProfile() {
+            const nom = document.getElementById('profileNom').value;
+            const telephone = document.getElementById('profileTelephone').value;
+            const entreprise = document.getElementById('profileEntreprise').value;
+            if (!nom) return showNotification('Le nom est requis', true);
+            try {
+                const res = await fetch(`${API_URL}/api/user/profile`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ nom, telephone, entreprise }) });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    updateUI();
+                    showNotification('Profil mis à jour');
+                } else showNotification('Erreur', true);
+            } catch(e) { }
+        }
+
+        async function subscribeToService(service) {
+            try {
+                const res = await fetch(`${API_URL}/api/user/subscribe`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ service }) });
+                if (res.ok) { 
+                    showNotification(`✅ Demande d'inscription envoyée pour ${service}. Un expert vous contactera.`); 
+                    loadDashboard(); 
+                }
+            } catch(e) { showNotification('Erreur réseau', true); }
+        }
+
+        function escapeHtml(text) { if (!text) return ''; return text.toString().replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+        function toggleUserDropdown() { document.getElementById('userDropdown').classList.toggle('show'); }
+        function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/'; }
+        function showProfileModal() { document.querySelector('.sidebar-link[data-section="profile"]').click(); }
+        function openModal(id) { document.getElementById(id).classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+        document.addEventListener('click', (e) => { if (!e.target.closest('.user-menu')) document.getElementById('userDropdown')?.classList.remove('show'); });
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                const section = link.getAttribute('data-section');
+                document.querySelectorAll('[id$="Section"]').forEach(s => s.classList.add('hidden'));
+                document.getElementById(`${section}Section`).classList.remove('hidden');
+                if (section === 'activities') loadActivities();
+                if (section === 'messages') loadMessages();
+            });
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>

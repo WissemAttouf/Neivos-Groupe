@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEIVOS GROUPE | Administration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0A0D14; color: #F9FAFB; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .glass-card { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(10px); border: 1px solid #2A3143; border-radius: 20px; }
+        .stat-card { background: linear-gradient(145deg, #111827, #0F1420); border: 1px solid #2A3143; border-radius: 16px; padding: 20px; transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-3px); border-color: #3B82F6; }
+        .card-item { background: #1F2A3E; border-radius: 12px; padding: 16px; margin-bottom: 12px; transition: all 0.2s; }
+        .card-item:hover { background: #2A3143; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: all 0.3s; }
+        .modal.show { visibility: visible; opacity: 1; }
+        .modal-content { max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; background: #111827; border-radius: 32px; border: 1px solid #2A3143; padding: 32px; }
+        .form-input { background: #0F1219; border: 1px solid #1F2A3E; color: #F3F4F6; border-radius: 14px; padding: 12px 16px; width: 100%; }
+        .form-input:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        .submit-btn { background: linear-gradient(95deg, #3B82F6, #8B5CF6); transition: all 0.3s; border-radius: 14px; font-weight: 600; cursor: pointer; color: white; padding: 12px; width: 100%; border: none; }
+        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(59,130,246,0.4); }
+        .tab-btn { padding: 10px 20px; border-radius: 40px; cursor: pointer; transition: all 0.2s; background: #1F2A3E; color: #9CA3AF; }
+        .tab-btn.active { background: linear-gradient(95deg, #3B82F6, #8B5CF6); color: white; }
+        .badge-pending { background: #F59E0B; color: #000; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+        .badge-approved { background: #10B981; color: #fff; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+        .badge-rejected { background: #EF4444; color: #fff; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+        .badge-completed { background: #3B82F6; color: #fff; border-radius: 20px; padding: 2px 8px; font-size: 11px; }
+        .toast-notification { position: fixed; top: 80px; right: 20px; z-index: 1000; padding: 12px 24px; border-radius: 12px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center"><span class="text-white font-bold text-lg">N</span></div>
+                <h1 class="text-2xl font-bold">Administration NEIVOS</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="logoutBtn" class="bg-red-500/20 text-red-400 px-4 py-2 rounded-lg hover:bg-red-500/30 transition">Déconnexion</button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div class="stat-card text-center"><i class="fas fa-users text-3xl text-blue-500 mb-2"></i><div id="statUsers" class="text-3xl font-bold">0</div><div class="text-gray-400 text-sm">Utilisateurs</div></div>
+            <div class="stat-card text-center"><i class="fas fa-envelope text-3xl text-purple-500 mb-2"></i><div id="statContacts" class="text-3xl font-bold">0</div><div class="text-gray-400 text-sm">Demandes</div></div>
+            <div class="stat-card text-center"><i class="fas fa-comment-dots text-3xl text-cyan-500 mb-2"></i><div id="statMessages" class="text-3xl font-bold">0</div><div class="text-gray-400 text-sm">Messages non lus</div></div>
+            <div class="stat-card text-center"><i class="fas fa-file-invoice text-3xl text-green-400 mb-2"></i><div id="statSubscriptions" class="text-3xl font-bold">0</div><div class="text-gray-400 text-sm">Inscriptions en attente</div></div>
+            <div class="stat-card text-center"><i class="fas fa-microchip text-3xl text-orange-400 mb-2"></i><div id="statTechnologies" class="text-3xl font-bold">0</div><div class="text-gray-400 text-sm">Technologies</div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-3 mb-6 flex-wrap">
+            <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="showTab('technologies')">⚙️ Technologies</button>
+            <button class="tab-btn" onclick="showTab('services')">📌 Services</button>
+            <button class="tab-btn" onclick="showTab('subscriptions')">📋 Inscriptions</button>
+            <button class="tab-btn" onclick="showTab('messages')">💬 Messages</button>
+            <button class="tab-btn" onclick="showTab('contacts')">📩 Demandes contact</button>
+            <button class="tab-btn" onclick="showTab('users')">👥 Utilisateurs</button>
+        </div>
+
+        <!-- Tab Dashboard -->
+        <div id="tab-dashboard" class="tab-content glass-card p-6">
+            <h2 class="text-xl font-bold mb-4">📊 Vue d'ensemble</h2>
+            <div id="dashboardStats" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card-item"><h3 class="font-bold mb-2">📈 Activité récente</h3><div id="recentActivity"></div></div>
+                <div class="card-item"><h3 class="font-bold mb-2">📊 Répartition</h3><div id="statsSummary"></div></div>
+            </div>
+        </div>
+
+        <!-- Tab Technologies (CRUD) -->
+        <div id="tab-technologies" class="tab-content hidden glass-card p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">⚙️ Technologies</h2>
+                <button onclick="openTechModal()" class="bg-green-500/20 text-green-400 px-4 py-2 rounded-lg hover:bg-green-500/30">+ Ajouter</button>
+            </div>
+            <div id="technologiesList" class="space-y-4"></div>
+        </div>
+
+        <!-- Tab Services (CRUD) -->
+        <div id="tab-services" class="tab-content hidden glass-card p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">📌 Services</h2>
+                <button onclick="openServiceModal()" class="bg-green-500/20 text-green-400 px-4 py-2 rounded-lg hover:bg-green-500/30">+ Ajouter</button>
+            </div>
+            <div id="servicesList" class="space-y-4"></div>
+        </div>
+
+        <!-- Tab Inscriptions -->
+        <div id="tab-subscriptions" class="tab-content hidden glass-card p-6">
+            <h2 class="text-xl font-bold mb-4">📋 Demandes d'inscription aux services (Mes devis)</h2>
+            <div id="subscriptionsList" class="space-y-4"></div>
+        </div>
+
+        <!-- Tab Messages (Envoyer aux clients) -->
+        <div id="tab-messages" class="tab-content hidden glass-card p-6">
+            <h2 class="text-xl font-bold mb-4">💬 Envoyer un message à un client</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><label class="block text-sm mb-2">Sélectionner un client</label><select id="messageClientId" class="form-input"><option value="">-- Choisir un client --</option></select></div>
+                <div><label class="block text-sm mb-2">Objet / Message</label><textarea id="messageContent" rows="3" class="form-input" placeholder="Votre message..."></textarea><button onclick="sendMessageToClient()" class="submit-btn mt-3">Envoyer</button></div>
+            </div>
+            <div class="mt-6"><h3 class="font-bold mb-2">📨 Derniers messages</h3><div id="recentMessages" class="space-y-2 max-h-64 overflow-y-auto"></div></div>
+        </div>
+
+        <!-- Tab Contacts -->
+        <div id="tab-contacts" class="tab-content hidden glass-card p-6">
+            <h2 class="text-xl font-bold mb-4">📩 Demandes de contact</h2>
+            <div id="contactsList" class="space-y-4"></div>
+        </div>
+
+        <!-- Tab Users -->
+        <div id="tab-users" class="tab-content hidden glass-card p-6">
+            <h2 class="text-xl font-bold mb-4">👥 Utilisateurs</h2>
+            <div class="overflow-x-auto"><table class="w-full text-left"><thead class="border-b border-gray-700"><tr><th class="p-3">ID</th><th class="p-3">Nom</th><th class="p-3">Email</th><th class="p-3">Inscrit le</th><th class="p-3">Action</th></tr></thead><tbody id="usersList"></tbody></table></div>
+        </div>
+    </div>
+
+    <!-- Modal Édition Utilisateur -->
+    <div id="userEditModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Modifier l'utilisateur</h3><input type="hidden" id="editUserId"><input type="text" id="editUserName" placeholder="Nom" class="form-input mb-3"><input type="email" id="editUserEmail" placeholder="Email" class="form-input mb-3"><input type="text" id="editUserPhone" placeholder="Téléphone" class="form-input mb-3"><input type="text" id="editUserCompany" placeholder="Entreprise" class="form-input mb-3"><select id="editUserActive" class="form-input mb-4"><option value="1">Actif</option><option value="0">Inactif</option></select><div class="flex gap-3"><button onclick="updateUser()" class="submit-btn">Enregistrer</button><button onclick="closeModal('userEditModal')" class="bg-gray-600 px-4 py-2 rounded-lg text-white">Annuler</button></div></div></div>
+
+    <!-- Modal User Dashboard -->
+    <div id="userDashboardModal" class="modal"><div class="modal-content max-w-4xl"><h3 id="userDashboardTitle" class="text-xl font-bold mb-4 hero-gradient-text"></h3><div id="userDashboardContent" class="text-gray-300"></div><div class="mt-6"><button onclick="closeModal('userDashboardModal')" class="bg-gray-600 px-4 py-2 rounded-lg text-white">Fermer</button></div></div></div>
+
+    <!-- Modal Technologies -->
+    <div id="techModal" class="modal"><div class="modal-content"><h3 id="techModalTitle" class="text-xl font-bold mb-4">Ajouter une technologie</h3><input type="hidden" id="techId"><input type="text" id="techTitle" placeholder="Titre" class="form-input mb-3"><input type="text" id="techIcon" placeholder="Icône (ex: fas fa-microchip)" class="form-input mb-3"><textarea id="techDescription" rows="3" placeholder="Description courte (apparaît sur la carte)" class="form-input mb-3"></textarea><textarea id="techDetails" rows="5" placeholder="Détails complets (apparaît au clic sur détails)" class="form-input mb-4"></textarea><div class="flex gap-3"><button onclick="saveTechnology()" class="submit-btn">Enregistrer</button><button onclick="closeModal('techModal')" class="bg-gray-600 px-4 py-2 rounded-lg">Annuler</button></div></div></div>
+
+    <!-- Modal Services -->
+    <div id="serviceModal" class="modal"><div class="modal-content"><h3 id="serviceModalTitle" class="text-xl font-bold mb-4">Ajouter un service</h3><input type="hidden" id="serviceId"><input type="text" id="serviceTitle" placeholder="Titre" class="form-input mb-3"><input type="text" id="serviceIcon" placeholder="Icône (ex: fas fa-handshake)" class="form-input mb-3"><textarea id="serviceDescription" rows="3" placeholder="Description courte (apparaît sur la carte)" class="form-input mb-3"></textarea><textarea id="serviceDetails" rows="5" placeholder="Détails complets (apparaît au clic sur détails)" class="form-input mb-3"></textarea><input type="text" id="servicePrice" placeholder="Tarif (ex: Sur Devis)" class="form-input mb-4"><div class="flex gap-3"><button onclick="saveService()" class="submit-btn">Enregistrer</button><button onclick="closeModal('serviceModal')" class="bg-gray-600 px-4 py-2 rounded-lg">Annuler</button></div></div></div>
+
+    <!-- Modal Détails -->
+    <div id="detailsModal" class="modal"><div class="modal-content max-w-2xl"><h3 id="detailsTitle" class="text-xl font-bold mb-4"></h3><div id="detailsContent" class="text-gray-300 leading-relaxed"></div><div class="mt-6"><button onclick="closeModal('detailsModal')" class="bg-gray-600 px-4 py-2 rounded-lg text-white">Fermer</button></div></div></div>
+
+    <!-- Modal Statut Inscription -->
+    <div id="statusModal" class="modal"><div class="modal-content"><h3 class="text-xl font-bold mb-4">Modifier le statut</h3><input type="hidden" id="statusSubId"><select id="statusValue" class="form-input mb-3"><option value="pending">En attente</option><option value="approved">Approuvé</option><option value="rejected">Rejeté</option><option value="completed">Complété</option></select><textarea id="statusNote" rows="3" placeholder="Note (optionnelle)" class="form-input mb-4"></textarea><div class="flex gap-3"><button onclick="updateSubscriptionStatus()" class="submit-btn">Mettre à jour</button><button onclick="closeModal('statusModal')" class="bg-gray-600 px-4 py-2 rounded-lg text-white">Annuler</button></div></div></div>
+
+    <script>
+        const API_URL = '';
+        let token = localStorage.getItem('adminToken');
+        let currentTechs = [];
+        let currentServices = [];
+
+        function showNotification(message, isError = false) {
+            const notif = document.createElement('div');
+            notif.className = `toast-notification ${isError ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'}`;
+            notif.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i>${message}`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 4000);
+        }
+
+        if (!token) {
+            const email = prompt('Email administrateur:');
+            const password = prompt('Mot de passe:');
+            if (email && password) {
+                fetch(`${API_URL}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) })
+                .then(res => res.json()).then(data => {
+                    if (data.token && data.user.role === 'admin') {
+                        localStorage.setItem('adminToken', data.token);
+                        token = data.token;
+                        loadAllData();
+                    } else { alert('Accès non autorisé'); window.location.href = '/'; }
+                }).catch(() => { alert('Erreur'); window.location.href = '/'; });
+            } else { window.location.href = '/'; }
+        } else { loadAllData(); }
+
+        async function loadAllData() {
+            await loadTechnologies();
+            await loadServices();
+            await loadSubscriptions();
+            await loadContacts();
+            await loadUsers();
+            await loadClientsForMessage();
+            await loadRecentMessages();
+            await loadStats();
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_URL}/api/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                document.getElementById('statUsers').innerText = data.stats.total_users || 0;
+                document.getElementById('statContacts').innerText = data.stats.pending_contacts || 0;
+                document.getElementById('statMessages').innerText = data.stats.unread_messages || 0;
+                const subsRes = await fetch(`${API_URL}/api/admin/subscriptions`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (subsRes.ok) {
+                    const subsData = await subsRes.json();
+                    const pendingCount = subsData.subscriptions?.filter(s => s.status === 'pending').length || 0;
+                    document.getElementById('statSubscriptions').innerText = pendingCount;
+                    document.getElementById('statTechnologies').innerText = currentTechs.length;
+                    document.getElementById('dashboardStats').innerHTML = `<div class="card-item"><h3 class="font-bold mb-2">📈 Nouvelles Inscriptions (Mes devis)</h3><div id="recentSubs"></div></div><div class="card-item"><h3 class="font-bold mb-2">📊 Statistiques</h3><p>👥 ${data.stats.total_users || 0} utilisateurs<br>📩 ${data.stats.pending_contacts || 0} demandes<br>💬 ${data.stats.unread_messages || 0} messages non lus<br>📋 ${pendingCount} inscriptions en attente</p></div>`;
+                    if (subsData.subscriptions) {
+                        document.getElementById('recentSubs').innerHTML = subsData.subscriptions.slice(0, 5).map(s => `<div class="text-sm py-1 border-b border-gray-700/50">📌 ${escapeHtml(s.user_nom)} s'est inscrit à <b>${escapeHtml(s.service_name)}</b> <span class="badge-${s.status} ml-2">${s.status}</span></div>`).join('');
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function loadTechnologies() {
+            try {
+                const res = await fetch(`${API_URL}/api/technologies`);
+                const data = await res.json();
+                currentTechs = data.technologies || [];
+                const container = document.getElementById('technologiesList');
+                container.innerHTML = currentTechs.map(t => `
+                    <div class="card-item">
+                        <div class="flex justify-between items-start">
+                            <div><i class="${t.icon} text-2xl text-blue-500 mr-3"></i><span class="font-bold text-lg">${escapeHtml(t.title)}</span></div>
+                            <div class="flex gap-2">
+                                <button onclick="viewDetails('tech', ${t.id})" class="bg-blue-500/20 text-blue-400 px-3 py-1 text-sm rounded"><i class="fas fa-eye mr-1"></i>Détails</button>
+                                <button onclick="editTechnology(${t.id})" class="text-yellow-400 px-2"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteTechnology(${t.id})" class="text-red-400 px-2"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mt-2">${escapeHtml(t.description)}</p>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+
+        async function loadServices() {
+            try {
+                const res = await fetch(`${API_URL}/api/services`);
+                const data = await res.json();
+                currentServices = data.services || [];
+                const container = document.getElementById('servicesList');
+                container.innerHTML = currentServices.map(s => `
+                    <div class="card-item">
+                        <div class="flex justify-between items-start">
+                            <div><i class="${s.icon} text-2xl text-purple-500 mr-3"></i><span class="font-bold text-lg">${escapeHtml(s.title)}</span></div>
+                            <div class="flex gap-2">
+                                <button onclick="viewDetails('service', ${s.id})" class="bg-blue-500/20 text-blue-400 px-3 py-1 text-sm rounded"><i class="fas fa-eye mr-1"></i>Détails</button>
+                                <button onclick="editService(${s.id})" class="text-yellow-400 px-2"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteService(${s.id})" class="text-red-400 px-2"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mt-2">${escapeHtml(s.description)}</p>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+
+        async function loadSubscriptions() {
+            try {
+                const res = await fetch(`${API_URL}/api/admin/subscriptions`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById('subscriptionsList');
+                    container.innerHTML = data.subscriptions?.map(s => `
+                        <div class="card-item">
+                            <div class="flex justify-between items-start flex-wrap gap-2">
+                                <div><span class="font-bold text-blue-400">${escapeHtml(s.user_nom)}</span> <span class="text-sm text-gray-400">(${escapeHtml(s.user_email)})</span></div>
+                                <span class="badge-${s.status}">${s.status === 'pending' ? 'En attente' : s.status === 'approved' ? 'Approuvé' : s.status === 'rejected' ? 'Rejeté' : 'Complété'}</span>
+                            </div>
+                            <div class="mt-2"><span class="text-purple-400 font-bold">Service inscrit :</span> ${escapeHtml(s.service_name)}</div>
+                            <div class="text-xs text-gray-500 mt-1">Date d'inscription : ${new Date(s.created_at).toLocaleString()}</div>
+                            <div class="mt-3 flex gap-2"><button onclick="openStatusModal(${s.id}, '${s.status}', '${escapeHtml(s.admin_note || '')}')" class="text-blue-400 text-sm bg-blue-500/10 px-2 py-1 rounded"><i class="fas fa-edit mr-1"></i> Modifier statut</button><button onclick="sendMessageToUser(${s.user_id}, '${escapeHtml(s.service_name)}')" class="text-green-400 text-sm bg-green-500/10 px-2 py-1 rounded"><i class="fas fa-envelope mr-1"></i> Envoyer message au client</button></div>
+                        </div>
+                    `).join('') || '<div class="text-center text-gray-500 py-8">Aucune inscription pour le moment.</div>';
+                }
+            } catch(e) {}
+        }
+
+        async function loadContacts() {
+            try {
+                const res = await fetch(`${API_URL}/api/admin/contacts`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById('contactsList');
+                    container.innerHTML = data.contacts?.map(c => `
+                        <div class="card-item">
+                            <div class="flex justify-between items-start"><div><span class="font-bold">${escapeHtml(c.nom)}</span> <span class="text-sm text-gray-400">(${escapeHtml(c.email)})</span></div><span class="text-xs px-2 py-1 rounded-full ${c.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'}">${c.status}</span></div>
+                            <p class="mt-2 text-gray-300">${escapeHtml(c.message)}</p>
+                            <div class="text-xs text-gray-500 mt-1">${new Date(c.created_at).toLocaleString()}</div>
+                            <div class="mt-3 flex gap-2"><button onclick="updateContactStatus(${c.id}, 'read')" class="text-blue-400 text-sm">📖 Marquer lu</button><button onclick="updateContactStatus(${c.id}, 'replied')" class="text-green-400 text-sm">✅ Marquer répondu</button></div>
+                        </div>
+                    `).join('') || '<div class="text-center text-gray-500 py-8">Aucune demande</div>';
+                }
+            } catch(e) {}
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API_URL}/api/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) {
+                    const data = await res.json();
+                    window.allUsers = data.users || [];
+                    const container = document.getElementById('usersList');
+                    container.innerHTML = data.users?.map(u => `
+                        <tr class="border-b border-gray-800">${[u.id, u.nom, u.email, new Date(u.created_at).toLocaleDateString()].map(v => `<td class="p-3">${escapeHtml(v)}</td>`).join('')}<td class="p-3"><button onclick="sendMessageToUser(${u.id})" class="text-blue-400 text-sm"><i class="fas fa-envelope mr-1"></i> Message</button> <button onclick="editUser(${u.id})" class="text-yellow-400 text-sm ml-2"><i class="fas fa-edit mr-1"></i> Modifier</button> <button onclick="viewUserDashboard(${u.id})" class="text-purple-400 text-sm ml-2"><i class="fas fa-chart-line mr-1"></i> Dashboard</button></td></tr>
+                    `).join('');
+                }
+            } catch(e) {}
+        }
+        
+        function editUser(id) {
+            const user = window.allUsers.find(u => u.id === id);
+            if (!user) return;
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUserName').value = user.nom;
+            document.getElementById('editUserEmail').value = user.email;
+            document.getElementById('editUserPhone').value = user.telephone || '';
+            document.getElementById('editUserCompany').value = user.entreprise || '';
+            document.getElementById('editUserActive').value = user.is_active === undefined ? 1 : (user.is_active ? 1 : 0);
+            openModal('userEditModal');
+        }
+
+        async function updateUser() {
+            const id = document.getElementById('editUserId').value;
+            const data = {
+                nom: document.getElementById('editUserName').value,
+                email: document.getElementById('editUserEmail').value,
+                telephone: document.getElementById('editUserPhone').value,
+                entreprise: document.getElementById('editUserCompany').value,
+                is_active: parseInt(document.getElementById('editUserActive').value)
+            };
+            await fetch(`${API_URL}/api/admin/users/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
+            closeModal('userEditModal');
+            loadUsers();
+            showNotification('Utilisateur mis à jour');
+        }
+        
+        async function viewUserDashboard(userId) {
+            const user = window.allUsers.find(u => u.id === userId);
+            if (!user) return;
+            document.getElementById('userDashboardTitle').innerHTML = `<i class="fas fa-user mr-2"></i> Dashboard Client : ${escapeHtml(user.nom)}`;
+            document.getElementById('userDashboardContent').innerHTML = '<p class="text-center">Chargement des données du client...</p>';
+            openModal('userDashboardModal');
+            try {
+                const subsRes = await fetch(`${API_URL}/api/admin/subscriptions`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const msgsRes = await fetch(`${API_URL}/api/admin/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+                let userSubs = [];
+                let userMsgs = [];
+                if (subsRes.ok) { userSubs = (await subsRes.json()).subscriptions?.filter(s => s.user_id === userId) || []; }
+                if (msgsRes.ok) { userMsgs = (await msgsRes.json()).messages?.filter(m => m.user_id === userId) || []; }
+                let contentHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><div class="bg-gray-800 p-4 rounded-xl border border-gray-700"><h4 class="font-bold mb-2">Profil</h4><p><strong>Email : </strong> ' + escapeHtml(user.email) + '</p></div><div class="bg-gray-800 p-4 rounded-xl border border-gray-700"><h4 class="font-bold mb-2">Statistiques</h4><p><strong>Inscriptions : </strong> ' + userSubs.length + '</p><p><strong>Messages : </strong> ' + userMsgs.length + '</p></div></div>';
+                contentHTML += '<h4 class="font-bold mb-2 pt-2 border-t border-gray-700">Inscriptions aux services</h4>';
+                contentHTML += userSubs.length > 0 ? '<div class="space-y-2 mb-4">' + userSubs.map(s => '<div class="bg-gray-800/50 p-2 rounded flex justify-between"><span>' + escapeHtml(s.service_name || 'Service') + '</span><span class="badge-' + s.status + '">' + s.status + '</span></div>').join('') + '</div>' : '<p class="text-sm text-gray-500 mb-4">Aucune inscription</p>';
+                document.getElementById('userDashboardContent').innerHTML = contentHTML;
+            } catch(e) { document.getElementById('userDashboardContent').innerHTML = '<p class="text-red-400">Erreur de chargement des données.</p>'; }
+        }
+
+        async function loadClientsForMessage() {
+            try {
+                const res = await fetch(`${API_URL}/api/admin/clients`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) {
+                    const data = await res.json();
+                    const select = document.getElementById('messageClientId');
+                    select.innerHTML = '<option value="">-- Choisir un client --</option>' + (data.clients?.map(c => `<option value="${c.id}">${escapeHtml(c.nom)} (${escapeHtml(c.email)})</option>`).join(''));
+                }
+            } catch(e) {}
+        }
+
+        async function loadRecentMessages() {
+            try {
+                const res = await fetch(`${API_URL}/api/admin/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById('recentMessages');
+                    container.innerHTML = data.messages?.slice(0, 10).map(m => `<div class="text-sm p-3 bg-gray-800/20 border border-gray-700 rounded-lg mb-2"><span class="font-bold ${m.sender === 'admin' ? 'text-green-400' : 'text-blue-400'}">${m.sender === 'admin' ? 'Vous' : escapeHtml(m.user_nom)}</span><span class="text-xs text-gray-500 ml-2">${new Date(m.created_at).toLocaleString()}</span><div class="text-gray-300 mt-1">${escapeHtml(m.message)}</div></div>`).join('') || '<div class="text-center text-gray-500">Aucun message</div>';
+                }
+            } catch(e) {}
+        }
+
+        async function sendMessageToClient() {
+            const userId = document.getElementById('messageClientId').value;
+            const message = document.getElementById('messageContent').value;
+            if (!userId || !message) return showNotification('Veuillez sélectionner un client et écrire un message', true);
+            try {
+                await fetch(`${API_URL}/api/admin/send-message`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ user_id: userId, message }) });
+                showNotification('✅ Message envoyé au client');
+                document.getElementById('messageContent').value = '';
+                loadRecentMessages();
+            } catch(e) { showNotification('Erreur', true); }
+        }
+
+        function sendMessageToUser(userId, serviceName = '') {
+            document.getElementById('messageClientId').value = userId;
+            const msg = serviceName ? `Suite à votre demande d'inscription au service "${serviceName}", ` : '';
+            document.getElementById('messageContent').value = msg + "Bonjour, nous avons bien reçu votre demande. Nous reviendrons vers vous au plus vite.\\n\\nCordialement,\\nL'équipe NEIVOS";
+            showNotification('Formulaire de message pré-rempli. Cliquez sur Envoyer.');
+            showTab('messages');
+        }
+
+        function openTechModal(tech = null) {
+            document.getElementById('techModalTitle').innerText = tech ? 'Modifier la technologie' : 'Ajouter une technologie';
+            document.getElementById('techId').value = tech?.id || '';
+            document.getElementById('techTitle').value = tech?.title || '';
+            document.getElementById('techIcon').value = tech?.icon || 'fas fa-microchip';
+            document.getElementById('techDescription').value = tech?.description || '';
+            document.getElementById('techDetails').value = tech?.details || '';
+            openModal('techModal');
+        }
+
+        function editTechnology(id) { const tech = currentTechs.find(t => t.id === id); if(tech) openTechModal(tech); }
+
+        async function saveTechnology() {
+            const id = document.getElementById('techId').value;
+            const data = { title: document.getElementById('techTitle').value, icon: document.getElementById('techIcon').value, description: document.getElementById('techDescription').value, details: document.getElementById('techDetails').value };
+            const url = id ? `${API_URL}/api/admin/technologies/${id}` : `${API_URL}/api/admin/technologies`;
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
+            if (res.ok) { showNotification(id ? 'Technologie modifiée' : 'Technologie ajoutée'); closeModal('techModal'); loadTechnologies(); loadStats(); }
+            else showNotification('Erreur', true);
+        }
+
+        async function deleteTechnology(id) { if(confirm('Supprimer cette technologie ?')) { await fetch(`${API_URL}/api/admin/technologies/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); loadTechnologies(); loadStats(); showNotification('Technologie supprimée'); } }
+
+        function openServiceModal(service = null) {
+            document.getElementById('serviceModalTitle').innerText = service ? 'Modifier le service' : 'Ajouter un service';
+            document.getElementById('serviceId').value = service?.id || '';
+            document.getElementById('serviceTitle').value = service?.title || '';
+            document.getElementById('serviceIcon').value = service?.icon || 'fas fa-handshake';
+            document.getElementById('serviceDescription').value = service?.description || '';
+            document.getElementById('serviceDetails').value = service?.details || '';
+            document.getElementById('servicePrice').value = service?.price || '';
+            openModal('serviceModal');
+        }
+
+        function editService(id) { const service = currentServices.find(s => s.id === id); if(service) openServiceModal(service); }
+
+        async function saveService() {
+            const id = document.getElementById('serviceId').value;
+            const data = { title: document.getElementById('serviceTitle').value, icon: document.getElementById('serviceIcon').value, description: document.getElementById('serviceDescription').value, details: document.getElementById('serviceDetails').value, price: document.getElementById('servicePrice').value };
+            const url = id ? `${API_URL}/api/admin/services/${id}` : `${API_URL}/api/admin/services`;
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(data) });
+            if (res.ok) { showNotification(id ? 'Service modifié' : 'Service ajouté'); closeModal('serviceModal'); loadServices(); loadStats(); }
+            else showNotification('Erreur', true);
+        }
+
+        async function deleteService(id) { if(confirm('Supprimer ce service ?')) { await fetch(`${API_URL}/api/admin/services/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); loadServices(); loadStats(); showNotification('Service supprimé'); } }
+
+        function openStatusModal(id, status, note) {
+            document.getElementById('statusSubId').value = id;
+            document.getElementById('statusValue').value = status;
+            document.getElementById('statusNote').value = note;
+            openModal('statusModal');
+        }
+
+        async function updateSubscriptionStatus() {
+            const id = document.getElementById('statusSubId').value;
+            const status = document.getElementById('statusValue').value;
+            const admin_note = document.getElementById('statusNote').value;
+            await fetch(`${API_URL}/api/admin/subscriptions/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status, admin_note }) });
+            showNotification('Statut mis à jour');
+            closeModal('statusModal');
+            loadSubscriptions();
+            loadStats();
+        }
+
+        function viewDetails(type, id) {
+            const item = type === 'tech' ? currentTechs.find(t => t.id === id) : currentServices.find(s => s.id === id);
+            if(item) {
+                document.getElementById('detailsTitle').innerHTML = `<i class="${item.icon} mr-2"></i>${escapeHtml(item.title)}`;
+                document.getElementById('detailsContent').innerHTML = `<p class="mb-4">${escapeHtml(item.description)}</p><hr class="my-4 border-gray-700"><h4 class="font-bold mb-2">Détails :</h4><p class="whitespace-pre-line">${escapeHtml(item.details || 'Aucun détail supplémentaire pour le moment.')}</p>${item.price ? `<p class="mt-4 text-green-400"><strong>Tarif :</strong> ${escapeHtml(item.price)}</p>` : ''}`;
+                openModal('detailsModal');
+            }
+        }
+
+        async function updateContactStatus(id, status) { await fetch(`${API_URL}/api/admin/contacts/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status }) }); loadContacts(); loadStats(); }
+
+        function showTab(tab) { document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden')); document.getElementById(`tab-${tab}`).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); }
+        function openModal(id) { document.getElementById(id).classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        function escapeHtml(text) { if(!text) return ''; return text.toString().replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('adminToken'); window.location.href = '/'; });
+    </script>
+</body>
+</html>

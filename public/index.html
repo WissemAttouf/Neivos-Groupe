@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="NEIVOS GROUPE - Cabinet d'expertise en IA, transformation digitale et innovation technologique.">
+    <title>NEIVOS GROUPE | IA & Innovation Premium</title>
+    <!-- Tailwind CSS + Font Awesome + Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0A0D14; color: #F9FAFB; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        /* LIGHT MODE */
+        body.light-mode { background-color: #F3F6FC; color: #1E293B; }
+        body.light-mode .text-brand-muted { color: #475569 !important; }
+        body.light-mode .card-tech, body.light-mode .value-card, body.light-mode .service-card, 
+        body.light-mode .stat-card, body.light-mode .kpi-card, body.light-mode .modal-content,
+        body.light-mode .dropdown-content, body.light-mode .marquee-item {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+        }
+        body.light-mode .glass-header { background: rgba(243, 246, 252, 0.9); border-bottom: 1px solid #E2E8F0; }
+        body.light-mode .form-input { background: #FFFFFF; border: 1px solid #CBD5E1; color: #1E293B; }
+        body.light-mode .service-tab { background: rgba(241, 245, 249, 0.8); color: #475569; }
+        body.light-mode .service-tab.active { background: linear-gradient(95deg, #EFF6FF, #FFFFFF); color: #2563EB; border-left-color: #2563EB; }
+        body.light-mode .nav-link { color: #475569; }
+        body.light-mode .dropdown-content { background: #FFFFFF; border-color: #E2E8F0; }
+        body.light-mode .user-dropdown { background: #FFFFFF; border-color: #E2E8F0; }
+        body.light-mode .user-dropdown a { color: #475569; }
+        body.light-mode .mobile-menu-panel { background: #F3F6FC; border-left-color: #E2E8F0; }
+        body.light-mode footer { border-top-color: #E2E8F0; background: #F8FAFC; }
+        body.light-mode .border-brand-border { border-color: #E2E8F0; }
+        
+        /* High Contrast */
+        body.high-contrast { background-color: #000000 !important; color: #FFFFFF !important; }
+        body.high-contrast .card-tech, body.high-contrast .glass-header, body.high-contrast footer,
+        body.high-contrast .modal-content, body.high-contrast .value-card, body.high-contrast .service-card,
+        body.high-contrast .dropdown-content, body.high-contrast .marquee-item { background-color: #000000 !important; border-color: #FFFF00 !important; }
+        body.high-contrast a, body.high-contrast button, body.high-contrast .submit-btn { color: #FFFF00 !important; }
+        body.high-contrast .hero-gradient-text { background: none !important; color: #FFFF00 !important; }
+        
+        .glass-header { background: rgba(10, 13, 20, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(31, 42, 62, 0.6); position: fixed; top: 0; width: 100%; z-index: 100; }
+        .hero-gradient-text { background: linear-gradient(135deg, #3B82F6, #8B5CF6, #06B6D4); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 3s linear infinite; }
+        @keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        
+        .card-tech, .value-card, .service-card, .stat-card, .kpi-card {
+            background: linear-gradient(145deg, #111827, #0F1420);
+            border: 1px solid #1F2A3E;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-radius: 24px;
+        }
+        .card-tech:hover, .value-card:hover, .service-card:hover { transform: translateY(-8px); border-color: #3B82F6; box-shadow: 0 25px 40px -12px rgba(59, 130, 246, 0.3); }
+        
+        .service-tab { cursor: pointer; color: #9CA3AF; border-left: 3px solid transparent; transition: all 0.25s ease; background: rgba(17, 24, 39, 0.5); border-radius: 12px; margin-bottom: 8px; font-weight: 500; width: 100%; text-align: left; }
+        .service-tab.active { background: linear-gradient(95deg, #1E2A47, #111827); color: #3B82F6; border-left-color: #3B82F6; box-shadow: 0 4px 12px rgba(59,130,246,0.2); }
+        .service-pane { display: none; animation: fadeSlideUp 0.5s ease; }
+        .service-pane.active { display: block; }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .form-input { background: #0F1219; border: 1px solid #1F2A3E; color: #F3F4F6; border-radius: 14px; padding: 14px 18px; width: 100%; }
+        .form-input:focus { outline: none; border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        .submit-btn { background: linear-gradient(95deg, #3B82F6, #8B5CF6); transition: all 0.3s; border-radius: 14px; font-weight: 600; cursor: pointer; color: white; }
+        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(59,130,246,0.4); }
+        
+        .scroll-reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+        
+        .typing-cursor { display: inline-block; width: 3px; height: 1.3rem; background-color: #3B82F6; animation: blink 0.8s infinite; margin-left: 4px; border-radius: 2px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        
+        #scrollTopBtn { position: fixed; bottom: 30px; right: 30px; z-index: 99; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); color: white; border: none; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        #scrollTopBtn.show { opacity: 1; visibility: visible; }
+        
+        .map-container { border-radius: 24px; overflow: hidden; border: 1px solid #1F2A3E; height: 400px; }
+        .theme-switch { cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(59,130,246,0.1); border: 1px solid #2A3143; transition: all 0.2s; }
+        #canvas-3d { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.5; }
+        
+        .marquee-section { background: linear-gradient(135deg, #0d1320, #0a0f1a); border-top: 1px solid #1F2A3E; border-bottom: 1px solid #1F2A3E; overflow: hidden; }
+        .marquee-wrapper { width: 100%; overflow: hidden; padding: 2.5rem 0; position: relative; }
+        .marquee-wrapper::before, .marquee-wrapper::after { content: ''; position: absolute; top: 0; width: 100px; height: 100%; z-index: 2; pointer-events: none; }
+        .marquee-wrapper::before { left: 0; background: linear-gradient(90deg, #0d1320, transparent); }
+        .marquee-wrapper::after { right: 0; background: linear-gradient(270deg, #0d1320, transparent); }
+        .marquee-content { display: flex; gap: 2.5rem; animation: marqueeScroll 25s linear infinite; width: max-content; }
+        .marquee-content:hover { animation-play-state: paused; }
+        @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .marquee-item { display: flex; align-items: center; gap: 12px; padding: 10px 24px; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 60px; font-weight: 500; white-space: nowrap; transition: all 0.3s; }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: all 0.3s; }
+        .modal.show { visibility: visible; opacity: 1; }
+        .modal-content { max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; background: #111827; border-radius: 32px; border: 1px solid #2A3143; padding: 32px; }
+        
+        .user-menu { position: relative; cursor: pointer; }
+        .user-dropdown { position: absolute; top: 100%; right: 0; background: #111827; border: 1px solid #2A3143; border-radius: 16px; padding: 8px 0; min-width: 200px; display: none; z-index: 200; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display: block; padding: 12px 20px; color: #9CA3AF; text-decoration: none; transition: background 0.2s; }
+        .user-dropdown a:hover { background: #1F2A3E; color: white; }
+        
+        .audio-player button { background: #1F2A3E; border: 1px solid #2A3143; color: #F9FAFB; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; transition: all 0.2s; }
+        .mobile-menu-panel { position: fixed; top: 0; right: -100%; width: 80%; max-width: 340px; height: 100%; background: #0A0D14; backdrop-filter: blur(20px); z-index: 1000; transition: right 0.3s ease; padding: 90px 28px 28px; border-left: 1px solid #2A3143; }
+        .mobile-menu-panel.open { right: 0; }
+        .mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .mobile-overlay.open { opacity: 1; visibility: visible; }
+        
+        .nav-link { position: relative; padding: 6px 0; font-weight: 500; transition: color 0.2s; color: #9CA3AF; }
+        .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, #3B82F6, #8B5CF6); transition: width 0.3s; border-radius: 2px; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .dropdown { position: relative; }
+        .dropdown-content { position: absolute; top: 100%; left: 0; background: #111827; border: 1px solid #2A3143; border-radius: 20px; padding: 12px 0; min-width: 240px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s; z-index: 150; backdrop-filter: blur(8px); }
+        .dropdown:hover .dropdown-content { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-item { display: flex; align-items: center; gap: 12px; padding: 12px 24px; transition: background 0.2s; cursor: pointer; color: #9CA3AF; }
+        .dropdown-item:hover { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+        .text-brand-muted { color: #9CA3AF; }
+        
+        /* Custom notification */
+        .custom-notification {
+            animation: slideInRight 0.3s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="dark">
+
+    <canvas id="canvas-3d"></canvas>
+
+    <!-- Header Premium -->
+    <header class="glass-header py-3">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <a href="#hero" class="flex items-center space-x-3">
+                    <svg class="h-10 w-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1"></stop>
+                                <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1"></stop>
+                            </linearGradient>
+                        </defs>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M50 100C77.6142 100 100 77.6142 100 50C100 22.3858 77.6142 0 50 0C22.3858 0 0 22.3858 0 50C0 77.6142 22.3858 100 50 100ZM50 88C70.9868 88 88 70.9868 88 50C88 29.0132 70.9868 12 50 12C29.0132 12 12 29.0132 12 50C12 70.9868 29.0132 88 50 88Z" fill="url(#logoGradient)" fill-opacity="0.4"></path>
+                        <circle cx="50" cy="50" r="4" fill="url(#logoGradient)"></circle>
+                        <circle cx="25" cy="35" r="3" fill="url(#logoGradient)"></circle>
+                        <circle cx="30" cy="20" r="2" fill="url(#logoGradient)"></circle>
+                        <circle cx="70" cy="80" r="2" fill="url(#logoGradient)"></circle>
+                        <circle cx="80" cy="65" r="3" fill="url(#logoGradient)"></circle>
+                        <circle cx="20" cy="60" r="2.5" fill="url(#logoGradient)"></circle>
+                    </svg>
+                    <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">NEIVOS GROUPE</span>
+                </a>
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#hero" class="nav-link" data-key="nav_home">Accueil</a>
+                    <div class="dropdown">
+                        <a href="#services" class="nav-link flex items-center gap-1" data-key="nav_services">Services <i class="fas fa-chevron-down text-xs"></i></a>
+                        <div class="dropdown-content">
+                            <div class="dropdown-item" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})"><i class="fas fa-handshake"></i><span data-key="service_out">Outsourcing</span></div>
+                            <div class="dropdown-item" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})"><i class="fas fa-chalkboard-user"></i><span data-key="service_train">Formation IT</span></div>
+                            <div class="dropdown-item" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})"><i class="fas fa-brain"></i><span data-key="service_consult">Conseil IA</span></div>
+                            <div class="dropdown-item" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})"><i class="fas fa-users"></i><span data-key="service_talent">Talents</span></div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="#technologies" class="nav-link flex items-center gap-1" data-key="nav_tech">Technologies <i class="fas fa-chevron-down text-xs"></i></a>
+                        <div class="dropdown-content">
+                            <div class="dropdown-item" onclick="document.getElementById('technologies').scrollIntoView({behavior:'smooth'})"><i class="fas fa-microchip"></i><span>LLM & NLU</span></div>
+                            <div class="dropdown-item" onclick="document.getElementById('technologies').scrollIntoView({behavior:'smooth'})"><i class="fas fa-eye"></i><span>Computer Vision</span></div>
+                            <div class="dropdown-item" onclick="document.getElementById('technologies').scrollIntoView({behavior:'smooth'})"><i class="fas fa-microphone-alt"></i><span>STT / TTS</span></div>
+                        </div>
+                    </div>
+                    <a href="#partners" class="nav-link" data-key="nav_partners">Partenaires</a>
+                    <a href="#resources" class="nav-link" data-key="nav_resources">Ressources</a>
+                    <a href="#contact" class="nav-link bg-blue-500/10 px-4 py-1.5 rounded-full text-blue-500" data-key="nav_contact">Contact</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <button id="lang-fr" class="text-white font-bold text-sm w-8 h-8 rounded-full bg-blue-500/20" onclick="setLanguage('fr')">FR</button>
+                        <span class="text-gray-400">/</span>
+                        <button id="lang-en" class="text-gray-400 text-sm w-8 h-8 rounded-full hover:bg-gray-800 transition" onclick="setLanguage('en')">EN</button>
+                    </div>
+                    <button id="themeToggle" class="theme-switch"><i id="themeIcon" class="fas fa-moon text-blue-500 text-lg"></i></button>
+                    <button id="accessibilityBtn" class="theme-switch"><i class="fas fa-universal-access text-blue-500 text-lg"></i></button>
+                    <div id="userMenu" class="user-menu hidden"><div class="flex items-center gap-2 bg-gray-800/50 rounded-full px-3 py-1.5 border border-gray-700" onclick="toggleUserDropdown()"><i class="fas fa-user-circle text-blue-500 text-xl"></i><span id="userNameDisplay" class="text-sm font-medium"></span><i class="fas fa-chevron-down text-xs"></i></div><div id="userDropdown" class="user-dropdown"><a href="#" onclick="showProfileModal(); return false;"><i class="fas fa-id-card mr-2"></i> <span data-key="profile">Mon profil</span></a><hr class="border-gray-700 my-1"><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt mr-2 text-red-400"></i> <span class="text-red-400" data-key="logout">Déconnexion</span></a></div></div>
+                    <button id="loginBtn" class="bg-gradient-to-r from-blue-500 to-purple-600 px-5 py-2 rounded-full text-white text-sm font-semibold hover:shadow-lg transition"><i class="fas fa-user mr-1"></i> <span data-key="login">Connexion</span></button>
+                    <button id="mobileMenuBtn" class="lg:hidden w-10 h-10 rounded-full bg-gray-800/50 border border-gray-700 flex items-center justify-center"><i class="fas fa-bars text-blue-500 text-lg"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    <div class="mobile-menu-panel" id="mobileMenuPanel"><button id="closeMobileMenu" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl">&times;</button><nav class="flex flex-col gap-3 mt-8"><a href="#hero" class="mobile-nav-link py-3 text-lg font-medium hover:text-blue-500" data-key="nav_home">🏠 Accueil</a><a href="#services" class="mobile-nav-link py-3 text-lg font-medium hover:text-blue-500" data-key="nav_services">📌 Services</a><a href="#technologies" class="mobile-nav-link py-3 text-lg font-medium hover:text-blue-500" data-key="nav_tech">⚙️ Technologies</a><a href="#partners" class="mobile-nav-link py-3 text-lg font-medium hover:text-blue-500" data-key="nav_partners">🤝 Partenaires</a><a href="#resources" class="mobile-nav-link py-3 text-lg font-medium hover:text-blue-500" data-key="nav_resources">🎧 Ressources</a><a href="#contact" class="mobile-nav-link py-3 text-lg font-medium hover:text-blue-500" data-key="nav_contact">💬 Contact</a><hr class="border-gray-700 my-3"><div class="flex justify-between py-3"><span class="text-gray-400" data-key="dark_mode">🌙 Mode sombre</span><button id="mobileThemeToggle" class="w-9 h-9 rounded-full bg-gray-800"><i class="fas fa-moon text-blue-500"></i></button></div></nav></div>
+
+    <div id="authModal" class="modal"><div class="modal-content"><div class="flex justify-between items-center mb-6"><h3 id="authTitle" class="text-2xl font-bold hero-gradient-text" data-key="login_title">Connexion</h3><button onclick="closeModal('authModal')" class="text-3xl text-gray-400 hover:text-white">&times;</button></div><div id="loginPanel"><input type="email" id="loginEmail" placeholder="Email" class="form-input w-full mb-4"><input type="password" id="loginPassword" placeholder="Mot de passe" class="form-input w-full mb-4"><button onclick="login()" class="submit-btn w-full py-3" data-key="login_btn">Se connecter</button><p class="text-center text-gray-400 mt-4"><span data-key="no_account">Pas encore de compte ?</span> <a href="#" onclick="showRegisterPanel()" class="text-blue-500" data-key="register_link">S'inscrire</a></p></div><div id="registerPanel" class="hidden"><input type="text" id="regNom" placeholder="Nom complet" class="form-input w-full mb-3"><input type="email" id="regEmail" placeholder="Email" class="form-input w-full mb-3"><input type="password" id="regPassword" placeholder="Mot de passe (6+)" class="form-input w-full mb-3"><input type="text" id="regTelephone" placeholder="Téléphone" class="form-input w-full mb-3"><input type="text" id="regEntreprise" placeholder="Entreprise" class="form-input w-full mb-4"><button onclick="register()" class="submit-btn w-full py-3" data-key="register_btn">S'inscrire</button><p class="text-center text-gray-400 mt-4"><a href="#" onclick="showLoginPanel()" class="text-blue-500" data-key="back_login">Retour connexion</a></p></div></div></div>
+    <div id="profileModal" class="modal"><div class="modal-content"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-bold hero-gradient-text" data-key="profile_title">Mon profil</h3><button onclick="closeModal('profileModal')" class="text-3xl text-gray-400 hover:text-white">&times;</button></div><div><p><strong data-key="name_label">Nom :</strong> <span id="profileNom"></span></p><p class="mt-2"><strong data-key="email_label">Email :</strong> <span id="profileEmail"></span></p></div></div></div>
+    <div id="imageModal" class="fixed inset-0 bg-black/90 z-[200] flex items-center justify-center opacity-0 invisible transition-all" onclick="closeImageModal()"><div class="max-w-4xl p-4"><img id="modalImage" class="w-full h-auto rounded-2xl"><p id="modalCaption" class="text-white mt-4 text-center"></p><button class="absolute top-5 right-5 text-white text-4xl" onclick="closeImageModal()">&times;</button></div></div>
+
+    <main>
+        <!-- HERO -->
+        <section id="hero" class="relative min-h-screen flex items-center justify-center pt-28">
+            <div class="container mx-auto px-6 text-center z-10">
+                <div class="inline-flex items-center gap-2 bg-gray-800/40 backdrop-blur-sm rounded-full px-5 py-2 border border-gray-700 mb-8">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-ping"></span>
+                    <span class="text-xs uppercase tracking-wide font-semibold text-gray-300" data-key="hero_badge">AI-driven innovation • Since 2026</span>
+                </div>
+                <h1 class="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight max-w-5xl mx-auto"><span data-key="hero_part1">Façonner le Futur avec l'</span><span class="hero-gradient-text" data-key="hero_part2">Intelligence Artificielle</span></h1>
+                <div class="mt-6 h-12"><p class="text-xl text-gray-400"><span id="hero-subtitle-typed"></span><span class="typing-cursor"></span></p></div>
+                <div class="mt-10 flex gap-4 justify-center flex-wrap">
+                    <a href="#services" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:scale-105 transition shadow-lg" data-key="hero_cta1">Découvrir nos solutions</a>
+                    <a href="#contact" class="border border-gray-700 px-8 py-4 rounded-full font-medium hover:border-blue-500 hover:text-blue-500 transition" data-key="hero_cta2">Contacter un expert</a>
+                </div>
+                <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce"><i class="fas fa-chevron-down text-gray-400 text-xl"></i></div>
+            </div>
+        </section>
+
+        <!-- VALUES -->
+        <section id="values" class="py-28 scroll-reveal">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16"><span class="text-blue-500 text-sm font-semibold uppercase tracking-wider" data-key="why_title">Pourquoi NEIVOS</span><h2 class="text-4xl md:text-5xl font-bold mt-2"><span data-key="values_title1">Une approche </span><span class="hero-gradient-text" data-key="values_title2">unique</span><span data-key="values_title3"> et </span><span class="hero-gradient-text" data-key="values_title4">responsable</span></h2><p class="text-gray-400 text-lg max-w-2xl mx-auto mt-4" data-key="values_subtitle">4 piliers fondamentaux qui guident notre action au quotidien</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="value-card p-6 text-center"><div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-flask text-3xl text-blue-500"></i></div><h3 class="text-xl font-bold mb-2" data-key="value1_title">Innovation</h3><p class="text-gray-400 text-sm" data-key="value1_text">Veille technologique et R&D continue</p></div>
+                    <div class="value-card p-6 text-center"><div class="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-certificate text-3xl text-purple-500"></i></div><h3 class="text-xl font-bold mb-2" data-key="value2_title">Excellence</h3><p class="text-gray-400 text-sm" data-key="value2_text">Experts certifiés et rigueur méthodologique</p></div>
+                    <div class="value-card p-6 text-center"><div class="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-hand-holding-heart text-3xl text-cyan-500"></i></div><h3 class="text-xl font-bold mb-2" data-key="value3_title">Éthique</h3><p class="text-gray-400 text-sm" data-key="value3_text">IA responsable et transparente</p></div>
+                    <div class="value-card p-6 text-center"><div class="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-headset text-3xl text-green-400"></i></div><h3 class="text-xl font-bold mb-2" data-key="value4_title">Support</h3><p class="text-gray-400 text-sm" data-key="value4_text">Accompagnement personnalisé 24/7</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVICES TABS -->
+        <section id="services" class="py-28 scroll-reveal bg-gradient-to-b from-transparent to-gray-900/20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16"><span class="text-blue-500 text-sm font-semibold uppercase tracking-wider" data-key="offer_badge">Notre offre</span><h2 class="text-4xl md:text-5xl font-bold mt-2"><span data-key="services_title1">Services </span><span class="hero-gradient-text" data-key="services_title2">Premium</span></h2><p class="text-gray-400 text-lg max-w-2xl mx-auto mt-4" data-key="services_subtitle">Des solutions sur mesure pour votre transformation digitale</p></div>
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <div class="w-full lg:w-1/3 flex flex-col gap-3">
+                        <button data-target="service-1" class="service-tab p-5 rounded-xl active font-semibold flex items-center gap-4" onclick="switchService('service-1', this)"><div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center"><i class="fas fa-handshake text-xl text-blue-500"></i></div><div><div class="font-bold" data-key="tab1_title">Outsourcing</div><div class="text-sm text-gray-500" data-key="tab1_sub">Experts intégrés à vos équipes</div></div></button>
+                        <button data-target="service-2" class="service-tab p-5 rounded-xl font-semibold flex items-center gap-4" onclick="switchService('service-2', this)"><div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center"><i class="fas fa-chalkboard-user text-xl text-purple-500"></i></div><div><div class="font-bold" data-key="tab2_title">Formation IT</div><div class="text-sm text-gray-500" data-key="tab2_sub">Parcours sur mesure certifiants</div></div></button>
+                        <button data-target="service-3" class="service-tab p-5 rounded-xl font-semibold flex items-center gap-4" onclick="switchService('service-3', this)"><div class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center"><i class="fas fa-brain text-xl text-cyan-500"></i></div><div><div class="font-bold" data-key="tab3_title">Conseil IA & Data</div><div class="text-sm text-gray-500" data-key="tab3_sub">Audit → Production</div></div></button>
+                        <button data-target="service-4" class="service-tab p-5 rounded-xl font-semibold flex items-center gap-4" onclick="switchService('service-4', this)"><div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center"><i class="fas fa-users text-xl text-green-400"></i></div><div><div class="font-bold" data-key="tab4_title">Connexion Talents</div><div class="text-sm text-gray-500" data-key="tab4_sub">Recrutement & matching</div></div></button>
+                    </div>
+                    <div class="w-full lg:w-2/3 card-tech p-8 rounded-2xl">
+                        <div id="service-1" class="service-pane active"><h3 class="text-2xl font-bold text-blue-500 mb-3" data-key="pane1_title">Outsourcing Stratégique</h3><p class="text-gray-400 text-lg leading-relaxed" data-key="pane1_text">Nous intégrons des experts certifiés au sein de vos équipes pour piloter vos projets, garantir la qualité et accélérer vos développements avec une flexibilité maximale.</p><div class="mt-6 flex gap-3 text-sm"><span class="px-3 py-1 bg-blue-500/10 rounded-full text-blue-400"><i class="fas fa-check-circle text-blue-500 mr-1"></i> <span data-key="pane1_badge1">+50 experts</span></span><span class="px-3 py-1 bg-blue-500/10 rounded-full text-blue-400"><i class="fas fa-clock mr-1"></i> <span data-key="pane1_badge2">Déploiement 48h</span></span></div></div>
+                        <div id="service-2" class="service-pane"><h3 class="text-2xl font-bold text-purple-500 mb-3" data-key="pane2_title">Formation IT sur mesure</h3><p class="text-gray-400 text-lg leading-relaxed" data-key="pane2_text">Des parcours de formation adaptés à vos besoins, délivrés par des formateurs experts, pour une montée en compétence rapide et durable de vos équipes.</p><div class="mt-6 flex gap-3 text-sm"><span class="px-3 py-1 bg-purple-500/10 rounded-full text-purple-400"><i class="fas fa-certificate mr-1"></i> <span data-key="pane2_badge1">Certifications reconnues</span></span><span class="px-3 py-1 bg-purple-500/10 rounded-full text-purple-400"><i class="fas fa-users mr-1"></i> <span data-key="pane2_badge2">Format présentiel/distanciel</span></span></div></div>
+                        <div id="service-3" class="service-pane"><h3 class="text-2xl font-bold text-cyan-500 mb-3" data-key="pane3_title">Conseil IA & Data Science</h3><p class="text-gray-400 text-lg leading-relaxed" data-key="pane3_text">De l'audit à la production, nous vous guidons dans l'implémentation de solutions IA (NLP, Vision, LLMs) pour transformer vos données en avantage compétitif.</p><div class="mt-6 flex gap-3 text-sm"><span class="px-3 py-1 bg-cyan-500/10 rounded-full text-cyan-400"><i class="fas fa-chart-line mr-1"></i> <span data-key="pane3_badge1">ROI garanti</span></span><span class="px-3 py-1 bg-cyan-500/10 rounded-full text-cyan-400"><i class="fas fa-shield-alt mr-1"></i> <span data-key="pane3_badge2">Sécurité des données</span></span></div></div>
+                        <div id="service-4" class="service-pane"><h3 class="text-2xl font-bold text-green-400 mb-3" data-key="pane4_title">Mise en Relation de Talents</h3><p class="text-gray-400 text-lg leading-relaxed" data-key="pane4_text">Nous identifions et connectons les consultants IT les plus qualifiés avec des projets porteurs de sens, assurant une adéquation parfaite entre compétences et besoins.</p><div class="mt-6 flex gap-3 text-sm"><span class="px-3 py-1 bg-green-500/10 rounded-full text-green-400"><i class="fas fa-search mr-1"></i> <span data-key="pane4_badge1">Matching personnalisé</span></span><span class="px-3 py-1 bg-green-500/10 rounded-full text-green-400"><i class="fas fa-handshake mr-1"></i> <span data-key="pane4_badge2">Satisfaction garantie</span></span></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECHNOLOGIES -->
+        <section id="technologies" class="py-28 scroll-reveal">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16"><span class="text-blue-500 text-sm font-semibold uppercase tracking-wider" data-key="tech_badge">Tech Stack</span><h2 class="text-4xl md:text-5xl font-bold mt-2"><span data-key="tech_title1">Technologies </span><span class="hero-gradient-text" data-key="tech_title2">de pointe</span></h2><p class="text-gray-400 text-lg max-w-2xl mx-auto mt-4" data-key="tech_subtitle">Les meilleurs outils pour des solutions d'exception</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="service-card p-8 text-center"><i class="fas fa-microchip text-5xl text-blue-500 mb-4"></i><h3 class="text-2xl font-bold mb-3 hero-gradient-text">LLM & NLU</h3><p class="text-gray-400" data-key="tech_llm">Exploitation des grands modèles de langage pour bâtir des systèmes d'analyse sémantique et des agents conversationnels intelligents.</p></div>
+                    <div class="service-card p-8 text-center"><i class="fas fa-eye text-5xl text-purple-500 mb-4"></i><h3 class="text-2xl font-bold mb-3 hero-gradient-text">Computer Vision</h3><p class="text-gray-400" data-key="tech_vision">Analyse d'images et vidéos pour détection d'objets, reconnaissance faciale et contrôle qualité (modèles YOLO, ViT).</p></div>
+                    <div class="service-card p-8 text-center"><i class="fas fa-microphone-alt text-5xl text-cyan-500 mb-4"></i><h3 class="text-2xl font-bold mb-3 hero-gradient-text">STT / TTS</h3><p class="text-gray-400" data-key="tech_voice">Transformation de la voix en données (Speech-to-Text) et inversement pour créer des interfaces vocales interactives.</p></div>
+                </div>
+                <div class="mt-12 text-center"><a href="https://huggingface.co/mohamed1ai" target="_blank" class="inline-flex items-center gap-2 text-blue-500 border border-gray-700 px-6 py-3 rounded-full hover:bg-gray-800 transition"><i class="fab fa-hugging-face text-xl"></i><span data-key="huggingface">Explorer nos modèles open source sur Hugging Face</span><i class="fas fa-arrow-right text-sm"></i></a></div>
+            </div>
+        </section>
+
+        <!-- PARTNERS MARQUEE -->
+        <section id="partners" class="marquee-section scroll-reveal"><div class="container mx-auto px-6 text-center pt-12"><i class="fas fa-handshake text-4xl text-purple-500 mb-2"></i><h2 class="text-3xl font-bold"><span data-key="partners_title1">Nos partenaires </span><span class="hero-gradient-text" data-key="partners_title2">technologiques mondiaux</span></h2><p class="text-gray-400 mt-2 mb-6" data-key="partners_subtitle">Des alliances stratégiques avec les leaders de l'IA</p></div><div class="marquee-wrapper"><div class="marquee-content"><div class="marquee-item"><i class="fab fa-openai"></i> OpenAI</div><div class="marquee-item"><i class="fas fa-robot"></i> Hugging Face</div><div class="marquee-item"><i class="fab fa-google"></i> Google AI</div><div class="marquee-item"><i class="fab fa-microsoft"></i> Microsoft Azure</div><div class="marquee-item"><i class="fas fa-brain"></i> Anthropic</div><div class="marquee-item"><i class="fab fa-nvidia"></i> NVIDIA AI</div><div class="marquee-item"><i class="fas fa-cloud"></i> AWS AI</div><div class="marquee-item"><i class="fas fa-microchip"></i> Mistral AI</div><div class="marquee-item"><i class="fab fa-openai"></i> OpenAI</div><div class="marquee-item"><i class="fas fa-robot"></i> Hugging Face</div><div class="marquee-item"><i class="fab fa-google"></i> Google AI</div><div class="marquee-item"><i class="fab fa-microsoft"></i> Microsoft Azure</div><div class="marquee-item"><i class="fas fa-brain"></i> Anthropic</div><div class="marquee-item"><i class="fab fa-nvidia"></i> NVIDIA AI</div><div class="marquee-item"><i class="fas fa-cloud"></i> AWS AI</div><div class="marquee-item"><i class="fas fa-microchip"></i> Mistral AI</div></div></div><div class="text-center pb-12"><p class="text-gray-400 text-sm" data-key="partners_more">et plus de 50 partenaires à travers le monde</p></div></section>
+
+        <!-- SOCIAL PROOF -->
+        <section id="social-proof" class="py-28 scroll-reveal bg-gradient-to-b from-transparent to-gray-900/20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16"><span class="text-blue-500 text-sm font-semibold uppercase tracking-wider" data-key="trust_title">Ils nous font confiance</span><h2 class="text-4xl md:text-5xl font-bold mt-2"><span data-key="stats_title1">Chiffres </span><span class="hero-gradient-text" data-key="stats_title2">clés</span></h2></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="stat-card p-8 text-center"><div class="text-5xl font-bold text-blue-500 mb-2">50+</div><div class="text-gray-400" data-key="stat1">Clients satisfaits</div></div>
+                    <div class="stat-card p-8 text-center"><div class="text-5xl font-bold text-purple-500 mb-2">98%</div><div class="text-gray-400" data-key="stat2">Taux de satisfaction</div></div>
+                    <div class="stat-card p-8 text-center"><div class="text-5xl font-bold text-cyan-500 mb-2">24/7</div><div class="text-gray-400" data-key="stat3">Support disponible</div></div>
+                    <div class="stat-card p-8 text-center"><div class="text-5xl font-bold text-green-400 mb-2">100+</div><div class="text-gray-400" data-key="stat4">Projets livrés</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESOURCES AUDIO -->
+        <section id="resources" class="py-28 scroll-reveal border-y border-gray-800" style="background: linear-gradient(135deg, #0d1320, #0a0f1a)">
+            <div class="container mx-auto px-6 max-w-4xl text-center"><i class="fas fa-headphones text-5xl text-purple-500 mb-4"></i><h2 class="text-3xl md:text-4xl font-bold mb-3" data-key="resource_title">Ressource du mois</h2><p class="text-gray-400 mb-8" data-key="resource_subtitle">Écoutez notre vision de l'IA en action</p><div class="card-tech p-8 rounded-2xl"><p id="audioText" class="text-gray-400 italic border-l-4 border-blue-500 pl-6 text-lg leading-relaxed" data-key="audio_text">"L'intelligence artificielle n'est plus de la science-fiction ; elle est une réalité qui façonne activement notre quotidien. Chez NEIVOS GROUPE, nous développons des solutions accessibles, éthiques et performantes pour nos clients, en partenariat avec les leaders mondiaux de l'IA."</p><div class="mt-8 flex items-center gap-4 audio-player justify-center"><button onclick="playAudio()"><i class="fas fa-play"></i></button><button onclick="pauseAudio()"><i class="fas fa-pause"></i></button><button onclick="stopAudio()"><i class="fas fa-stop"></i></button><span id="audio-status" class="text-sm text-gray-400 ml-3" data-key="audio_status">Prêt à jouer</span></div></div></div>
+        </section>
+
+        <!-- LOCATION -->
+        <section id="location" class="py-28 scroll-reveal">
+            <div class="container mx-auto px-6 max-w-5xl"><div class="text-center mb-10"><i class="fas fa-map-marker-alt text-4xl text-blue-500 mb-2"></i><h2 class="text-3xl font-bold" data-key="location_title">Notre localisation</h2><p class="text-gray-400 mt-1" data-key="address">85-87 Rue de La Palestine, Tunis 1002, Tunisie</p></div><div id="neivos-map" class="map-container shadow-xl"></div></div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="py-28 scroll-reveal">
+            <div class="container mx-auto px-6 max-w-5xl">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card-tech p-8"><input type="text" id="contactNom" placeholder="Nom complet" class="form-input mb-4">
+<input type="email" id="contactEmail" placeholder="Email" class="form-input mb-4">
+<input type="text" id="contactTelephone" placeholder="Téléphone" class="form-input mb-4">
+<input type="text" id="contactEntreprise" placeholder="Entreprise" class="form-input mb-4">
+<textarea id="contactMessage" rows="4" placeholder="Votre message" class="form-input mb-4"></textarea>
+<button onclick="envoyerContact()" class="submit-btn py-3">Envoyer</button></div>
+                    <div class="card-tech p-8"><div class="text-center mb-6"><i class="fas fa-newspaper text-4xl text-purple-500 mb-2"></i><h3 class="text-2xl font-bold" data-key="newsletter_title">Newsletter</h3><p class="text-gray-400 text-sm" data-key="newsletter_text">Recevez nos actualités et offres exclusives</p></div><input type="email" id="newsletterEmail" placeholder="Votre email" class="form-input mb-4" data-key-placeholder="email_placeholder"><button onclick="inscrireNewsletter()" class="submit-btn py-3" data-key="subscribe_btn">S'inscrire</button><div class="mt-8 pt-6 border-t border-gray-700"><h4 class="font-bold mb-3 text-center" data-key="contact_info">Nos coordonnées</h4><p class="text-gray-400 text-center"><i class="fas fa-map-marker-alt text-blue-500 mr-2"></i> 85-87 Rue de La Palestine, Tunis<br><i class="fas fa-envelope text-blue-500 mr-2 mt-2"></i> contact@neivos.fr<br><i class="fas fa-phone text-blue-500 mr-2 mt-2"></i> +216 XX XXX XXX</p></div></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-gray-800 py-12 bg-gray-900/30">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div><h3 class="text-xl font-bold mb-3 hero-gradient-text">NEIVOS GROUPE</h3><p class="text-gray-400 text-sm" data-key="footer_desc">Expert en IA et transformation digitale depuis 2020.</p><div class="flex gap-3 mt-4"><a href="#" class="text-gray-400 hover:text-blue-500 text-xl"><i class="fab fa-linkedin"></i></a><a href="#" class="text-gray-400 hover:text-blue-500 text-xl"><i class="fab fa-twitter"></i></a><a href="#" class="text-gray-400 hover:text-blue-500 text-xl"><i class="fab fa-github"></i></a></div></div>
+                <div><h4 class="font-semibold mb-3 text-gray-300" data-key="footer_services">Services</h4><ul class="space-y-2 text-gray-400 text-sm"><li data-key="footer_out">Outsourcing IT</li><li data-key="footer_train">Formation sur mesure</li><li data-key="footer_consult">Conseil IA & Data</li><li data-key="footer_talent">Connexion Talents</li></ul></div>
+                <div><h4 class="font-semibold mb-3 text-gray-300" data-key="footer_resources">Ressources</h4><ul class="space-y-2 text-gray-400 text-sm"><li>Blog</li><li data-key="footer_cases">Études de cas</li><li>Webinaires</li><li>Documentation</li></ul></div>
+                <div><h4 class="font-semibold mb-3 text-gray-300" data-key="footer_legal">Légal</h4><ul class="space-y-2 text-gray-400 text-sm"><li data-key="legal_mentions">Mentions légales</li><li data-key="legal_privacy">Politique de confidentialité</li><li>CGU / CGV</li><li>Cookies</li></ul></div>
+            </div>
+            <div class="text-center pt-6 border-t border-gray-800"><p class="text-gray-400 text-sm" data-key="copyright">&copy; 2025 NEIVOS GROUPE - Tous droits réservés. L'innovation IA au service de votre croissance.</p></div>
+        </div>
+    </footer>
+
+    <button id="scrollTopBtn"><i class="fas fa-arrow-up text-xl"></i></button>
+
+    <script type="module">
+        import * as THREE from 'three';
+        const canvas = document.getElementById('canvas-3d');
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 12);
+        const particlesGeo = new THREE.BufferGeometry();
+        const posArray = new Float32Array(1800*3);
+        for(let i=0;i<1800;i++){posArray[i*3]=(Math.random()-.5)*25;posArray[i*3+1]=(Math.random()-.5)*15;posArray[i*3+2]=(Math.random()-.5)*20-10;}
+        particlesGeo.setAttribute('position',new THREE.BufferAttribute(posArray,3));
+        const particles = new THREE.Points(particlesGeo,new THREE.PointsMaterial({size:.08,color:0x3b82f6,transparent:true,opacity:.5}));
+        scene.add(particles);
+        const torus=new THREE.Mesh(new THREE.TorusGeometry(2.2,.08,64,300),new THREE.MeshStandardMaterial({color:0x8b5cf6,emissive:0x3b82f6,emissiveIntensity:.4}));
+        const torus2=new THREE.Mesh(new THREE.TorusGeometry(2.8,.05,64,300),new THREE.MeshStandardMaterial({color:0x06b6d4,emissive:0x06b6d4,emissiveIntensity:.2}));
+        scene.add(torus); scene.add(torus2);
+        scene.add(new THREE.AmbientLight(0x404060));
+        const pl=new THREE.PointLight(0xffffff,1); pl.position.set(5,5,5); scene.add(pl);
+        scene.add(new THREE.DirectionalLight(0xffffff,.8).position.set(1,2,1));
+        function animate(){requestAnimationFrame(animate);torus.rotation.x+=.005;torus.rotation.y+=.01;torus2.rotation.x-=.003;torus2.rotation.z+=.007;particles.rotation.y+=.0005;renderer.setSize(innerWidth,innerHeight);renderer.render(scene,camera);}
+        animate();
+        addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    </script>
+
+    <script>
+        // ==================== TRANSLATION DICTIONARY ====================
+        const translations = {
+            fr: {
+                nav_home: "Accueil", nav_services: "Services", nav_tech: "Technologies", nav_partners: "Partenaires", nav_resources: "Ressources", nav_contact: "Contact",
+                hero_badge: "AI-driven innovation • Since 2026", hero_part1: "Façonner le Futur avec l'", hero_part2: "Intelligence Artificielle",
+                hero_cta1: "Découvrir nos solutions", hero_cta2: "Contacter un expert", why_title: "Pourquoi NEIVOS", values_title1: "Une approche ", values_title2: "unique", values_title3: " et ", values_title4: "responsable",
+                values_subtitle: "4 piliers fondamentaux qui guident notre action au quotidien", value1_title: "Innovation", value1_text: "Veille technologique et R&D continue",
+                value2_title: "Excellence", value2_text: "Experts certifiés et rigueur méthodologique", value3_title: "Éthique", value3_text: "IA responsable et transparente",
+                value4_title: "Support", value4_text: "Accompagnement personnalisé 24/7", offer_badge: "Notre offre", services_title1: "Services ", services_title2: "Premium",
+                services_subtitle: "Des solutions sur mesure pour votre transformation digitale", tab1_title: "Outsourcing", tab1_sub: "Experts intégrés à vos équipes",
+                tab2_title: "Formation IT", tab2_sub: "Parcours sur mesure certifiants", tab3_title: "Conseil IA & Data", tab3_sub: "Audit → Production",
+                tab4_title: "Connexion Talents", tab4_sub: "Recrutement & matching", pane1_title: "Outsourcing Stratégique", pane1_text: "Nous intégrons des experts certifiés au sein de vos équipes pour piloter vos projets, garantir la qualité et accélérer vos développements avec une flexibilité maximale.",
+                pane1_badge1: "+50 experts", pane1_badge2: "Déploiement 48h", pane2_title: "Formation IT sur mesure", pane2_text: "Des parcours de formation adaptés à vos besoins, délivrés par des formateurs experts, pour une montée en compétence rapide et durable de vos équipes.",
+                pane2_badge1: "Certifications reconnues", pane2_badge2: "Format présentiel/distanciel", pane3_title: "Conseil IA & Data Science", pane3_text: "De l'audit à la production, nous vous guidons dans l'implémentation de solutions IA (NLP, Vision, LLMs) pour transformer vos données en avantage compétitif.",
+                pane3_badge1: "ROI garanti", pane3_badge2: "Sécurité des données", pane4_title: "Mise en Relation de Talents", pane4_text: "Nous identifions et connectons les consultants IT les plus qualifiés avec des projets porteurs de sens, assurant une adéquation parfaite entre compétences et besoins.",
+                pane4_badge1: "Matching personnalisé", pane4_badge2: "Satisfaction garantie", tech_badge: "Tech Stack", tech_title1: "Technologies ", tech_title2: "de pointe",
+                tech_subtitle: "Les meilleurs outils pour des solutions d'exception", tech_llm: "Exploitation des grands modèles de langage pour bâtir des systèmes d'analyse sémantique et des agents conversationnels intelligents.",
+                tech_vision: "Analyse d'images et vidéos pour détection d'objets, reconnaissance faciale et contrôle qualité (modèles YOLO, ViT).",
+                tech_voice: "Transformation de la voix en données (Speech-to-Text) et inversement pour créer des interfaces vocales interactives.",
+                huggingface: "Explorer nos modèles open source sur Hugging Face", partners_title1: "Nos partenaires ", partners_title2: "technologiques mondiaux",
+                partners_subtitle: "Des alliances stratégiques avec les leaders de l'IA", partners_more: "et plus de 50 partenaires à travers le monde",
+                trust_title: "Ils nous font confiance", stats_title1: "Chiffres ", stats_title2: "clés", stat1: "Clients satisfaits", stat2: "Taux de satisfaction",
+                stat3: "Support disponible", stat4: "Projets livrés", resource_title: "Ressource du mois", resource_subtitle: "Écoutez notre vision de l'IA en action",
+                audio_text: "\"L'intelligence artificielle n'est plus de la science-fiction ; elle est une réalité qui façonne activement notre quotidien. Chez NEIVOS GROUPE, nous développons des solutions accessibles, éthiques et performantes pour nos clients, en partenariat avec les leaders mondiaux de l'IA.\"",
+                audio_status: "Prêt à jouer", location_title: "Notre localisation", address: "85-87 Rue de La Palestine, Tunis 1002, Tunisie",
+                contact_title: "📩 Envoyez-nous un message", newsletter_title: "Newsletter", newsletter_text: "Recevez nos actualités et offres exclusives",
+                contact_info: "Nos coordonnées", send_btn: "Envoyer", subscribe_btn: "S'inscrire", footer_desc: "Expert en IA et transformation digitale depuis 2020.",
+                footer_services: "Services", footer_out: "Outsourcing IT", footer_train: "Formation sur mesure", footer_consult: "Conseil IA & Data", footer_talent: "Connexion Talents",
+                footer_resources: "Ressources", footer_cases: "Études de cas", footer_legal: "Légal", legal_mentions: "Mentions légales", legal_privacy: "Politique de confidentialité",
+                copyright: "© 2025 NEIVOS GROUPE - Tous droits réservés. L'innovation IA au service de votre croissance.",
+                login_title: "Connexion", login_btn: "Se connecter", no_account: "Pas encore de compte ?", register_link: "S'inscrire", register_btn: "S'inscrire",
+                back_login: "Retour connexion", profile_title: "Mon profil", name_label: "Nom :", email_label: "Email :", profile: "Mon profil", logout: "Déconnexion",
+                login: "Connexion", dark_mode: "🌙 Mode sombre", name_placeholder: "Nom complet", email_placeholder: "Email", phone_placeholder: "Téléphone", message_placeholder: "Votre message",
+                service_out: "Outsourcing", service_train: "Formation IT", service_consult: "Conseil IA", service_talent: "Talents"
+            },
+            en: {
+                nav_home: "Home", nav_services: "Services", nav_tech: "Technologies", nav_partners: "Partners", nav_resources: "Resources", nav_contact: "Contact",
+                hero_badge: "AI-driven innovation • Since 2026", hero_part1: "Shaping the Future with ", hero_part2: "Artificial Intelligence",
+                hero_cta1: "Discover our solutions", hero_cta2: "Contact an expert", why_title: "Why NEIVOS", values_title1: "A ", values_title2: "unique", values_title3: " and ", values_title4: "responsible approach",
+                values_subtitle: "4 fundamental pillars guiding our daily actions", value1_title: "Innovation", value1_text: "Technology watch and continuous R&D",
+                value2_title: "Excellence", value2_text: "Certified experts and methodological rigor", value3_title: "Ethics", value3_text: "Responsible and transparent AI",
+                value4_title: "Support", value4_text: "Personalized 24/7 support", offer_badge: "Our offer", services_title1: "Premium ", services_title2: "Services",
+                services_subtitle: "Tailored solutions for your digital transformation", tab1_title: "Outsourcing", tab1_sub: "Experts integrated into your teams",
+                tab2_title: "IT Training", tab2_sub: "Custom certified training paths", tab3_title: "AI & Data Consulting", tab3_sub: "Audit → Production",
+                tab4_title: "Talent Connection", tab4_sub: "Recruitment & matching", pane1_title: "Strategic Outsourcing", pane1_text: "We integrate certified experts into your teams to drive your projects, ensure quality and accelerate your developments with maximum flexibility.",
+                pane1_badge1: "+50 experts", pane1_badge2: "48h deployment", pane2_title: "Custom IT Training", pane2_text: "Custom training paths delivered by expert trainers for rapid and sustainable upskilling of your teams.",
+                pane2_badge1: "Recognized certifications", pane2_badge2: "On-site/remote format", pane3_title: "AI & Data Science Consulting", pane3_text: "From audit to production, we guide you in implementing AI solutions (NLP, Vision, LLMs) to transform your data into competitive advantage.",
+                pane3_badge1: "Guaranteed ROI", pane3_badge2: "Data security", pane4_title: "Talent Connection", pane4_text: "We identify and connect the most qualified IT consultants with meaningful projects, ensuring a perfect match between skills and needs.",
+                pane4_badge1: "Personalized matching", pane4_badge2: "Satisfaction guaranteed", tech_badge: "Tech Stack", tech_title1: "Cutting-edge ", tech_title2: "Technologies",
+                tech_subtitle: "The best tools for exceptional solutions", tech_llm: "Leveraging large language models to build semantic analysis systems and intelligent conversational agents.",
+                tech_vision: "Image and video analysis for object detection, facial recognition and quality control (YOLO, ViT models).",
+                tech_voice: "Voice-to-data transformation and vice versa to create interactive voice interfaces.",
+                huggingface: "Explore our open source models on Hugging Face", partners_title1: "Our global ", partners_title2: "technology partners",
+                partners_subtitle: "Strategic alliances with AI leaders", partners_more: "and more than 50 partners worldwide",
+                trust_title: "They trust us", stats_title1: "Key ", stats_title2: "figures", stat1: "Satisfied clients", stat2: "Satisfaction rate",
+                stat3: "Support available", stat4: "Projects delivered", resource_title: "Resource of the month", resource_subtitle: "Listen to our vision of AI in action",
+                audio_text: "\"Artificial intelligence is no longer science fiction; it is a reality actively shaping our daily lives. At NEIVOS GROUPE, we develop accessible, ethical and high-performance solutions for our clients, in partnership with global AI leaders.\"",
+                audio_status: "Ready to play", location_title: "Our location", address: "85-87 Rue de La Palestine, Tunis 1002, Tunisia",
+                contact_title: "📩 Send us a message", newsletter_title: "Newsletter", newsletter_text: "Receive our news and exclusive offers",
+                contact_info: "Our contact info", send_btn: "Send", subscribe_btn: "Subscribe", footer_desc: "AI and digital transformation expert since 2020.",
+                footer_services: "Services", footer_out: "IT Outsourcing", footer_train: "Custom training", footer_consult: "AI & Data Consulting", footer_talent: "Talent Connection",
+                footer_resources: "Resources", footer_cases: "Case studies", footer_legal: "Legal", legal_mentions: "Legal notices", legal_privacy: "Privacy policy",
+                copyright: "© 2025 NEIVOS GROUPE - All rights reserved. AI innovation at the service of your growth.",
+                login_title: "Login", login_btn: "Login", no_account: "No account yet?", register_link: "Sign up", register_btn: "Sign up",
+                back_login: "Back to login", profile_title: "My profile", name_label: "Name:", email_label: "Email:", profile: "My profile", logout: "Logout",
+                login: "Login", dark_mode: "🌙 Dark mode", name_placeholder: "Full name", email_placeholder: "Email", phone_placeholder: "Phone", message_placeholder: "Your message",
+                service_out: "Outsourcing", service_train: "IT Training", service_consult: "AI Consulting", service_talent: "Talents"
+            }
+        };
+
+        let currentLang = 'fr';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (translations[lang][key]) el.textContent = translations[lang][key];
+            });
+            document.querySelectorAll('[data-key-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-key-placeholder');
+                if (translations[lang][key]) el.placeholder = translations[lang][key];
+            });
+            const frBtn = document.getElementById('lang-fr');
+            const enBtn = document.getElementById('lang-en');
+            if (lang === 'fr') {
+                frBtn.className = 'text-white font-bold text-sm w-8 h-8 rounded-full bg-blue-500/20';
+                enBtn.className = 'text-gray-400 text-sm w-8 h-8 rounded-full hover:bg-gray-800 transition';
+            } else {
+                frBtn.className = 'text-gray-400 text-sm w-8 h-8 rounded-full hover:bg-gray-800 transition';
+                enBtn.className = 'text-white font-bold text-sm w-8 h-8 rounded-full bg-blue-500/20';
+            }
+            updateTypedText();
+        }
+
+        // Typing animation
+        const phrasesFr = ["L'intelligence artificielle au service de votre croissance.", "Innovation, expertise, éthique : nos 3 piliers.", "Partenaires mondiaux, solutions locales."];
+        const phrasesEn = ["Artificial intelligence at the service of your growth.", "Innovation, expertise, ethics: our 3 pillars.", "Global partners, local solutions."];
+        let iPhrase = 0, jChar = 0, isDeleting = false;
+
+        function getCurrentPhrases() { return currentLang === 'fr' ? phrasesFr : phrasesEn; }
+
+        function typeEffect() {
+            const el = document.getElementById('hero-subtitle-typed');
+            if (!el) return;
+            const phrases = getCurrentPhrases();
+            const current = phrases[iPhrase];
+            if (isDeleting) { jChar--; el.innerHTML = current.substring(0, jChar); }
+            else { jChar++; el.innerHTML = current.substring(0, jChar); }
+            let speed = isDeleting ? 30 : 65;
+            if (!isDeleting && jChar === current.length) { speed = 2200; isDeleting = true; }
+            else if (isDeleting && jChar === 0) { isDeleting = false; iPhrase = (iPhrase + 1) % phrases.length; speed = 400; }
+            setTimeout(typeEffect, speed);
+        }
+
+        function updateTypedText() { iPhrase = 0; jChar = 0; isDeleting = false; typeEffect(); }
+
+        // Audio
+        let utterance = null;
+        function playAudio() { stopAudio(); const text = document.getElementById('audioText')?.innerText || ""; utterance = new SpeechSynthesisUtterance(text); utterance.lang = currentLang === 'fr' ? 'fr-FR' : 'en-US'; utterance.rate = 0.9; utterance.onstart = () => document.getElementById('audio-status').innerHTML = '🔊 Playing...'; utterance.onend = () => document.getElementById('audio-status').innerHTML = '✅ Done'; speechSynthesis.speak(utterance); }
+        function pauseAudio() { if (speechSynthesis.speaking && !speechSynthesis.paused) speechSynthesis.pause(); }
+        function stopAudio() { speechSynthesis.cancel(); document.getElementById('audio-status').innerHTML = '🎧 Ready'; }
+
+        // ==================== AUTHENTIFICATION CORRIGÉE ====================
+        const API_URL = '';
+        let currentUser = null;
+        let token = localStorage.getItem('token');
+
+        function showNotification(message, isError = false) {
+    // Supprimer les anciennes notifications
+    const oldNotif = document.querySelector('.custom-notification');
+    if (oldNotif) oldNotif.remove();
+    
+    const notif = document.createElement('div');
+    notif.className = `custom-notification fixed top-24 right-4 z-50 px-6 py-3 rounded-xl shadow-lg transition-all duration-300 ${isError ? 'bg-red-500/90 border border-red-600 text-white' : 'bg-green-500/90 border border-green-600 text-white'}`;
+    notif.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i>${message}`;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 4000);
+}
+
+        async function login() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        showNotification('Veuillez remplir tous les champs', true);
+        return;
+    }
+    
+    const btn = document.querySelector('#loginPanel .submit-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connexion...';
+    btn.disabled = true;
+    
+    try {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            currentUser = data.user;
+            token = data.token;
+            
+            showNotification(`✅ Bienvenue ${data.user.nom} ! Redirection en cours...`);
+            
+            setTimeout(() => {
+                // Redirection selon le rôle
+                if (data.user.role === 'admin') {
+                    window.location.href = '/admin';  // ← Page admin
+                } else {
+                    window.location.href = '/dashboard';  // ← Page client
+                }
+            }, 1500);
+        } else {
+            showNotification(data.error || 'Email ou mot de passe incorrect', true);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de connexion au serveur', true);
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+        async function register() {
+            const nom = document.getElementById('regNom').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const telephone = document.getElementById('regTelephone').value.trim();
+            const entreprise = document.getElementById('regEntreprise').value.trim();
+            if (!nom || !email || !password) {
+                showNotification('Veuillez remplir tous les champs obligatoires', true);
+                return;
+            }
+            if (password.length < 6) {
+                showNotification('Le mot de passe doit contenir au moins 6 caractères', true);
+                return;
+            }
+            const btn = document.querySelector('#registerPanel .submit-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Inscription...';
+            btn.disabled = true;
+            try {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nom, email, password, telephone, entreprise })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    token = data.token;
+                    showNotification(`✅ Inscription réussie ! Bienvenue ${data.user.nom} !`);
+                    setTimeout(() => window.location.href = '/dashboard', 1500);
+                } else {
+                    showNotification(data.error || 'Erreur lors de l\'inscription', true);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showNotification('Erreur de connexion au serveur', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            currentUser = null;
+            token = null;
+            updateUIBasedOnAuth();
+            showNotification('Déconnecté avec succès');
+        }
+
+        function updateUIBasedOnAuth() {
+            const loginBtn = document.getElementById('loginBtn');
+            const userMenu = document.getElementById('userMenu');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            if (currentUser && token) {
+                loginBtn.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                if (userNameDisplay) userNameDisplay.innerText = currentUser.nom?.split(' ')[0] || '';
+            } else {
+                loginBtn.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+            }
+        }
+
+        function showProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('profileNom').innerText = currentUser.nom || 'Non renseigné';
+            document.getElementById('profileEmail').innerText = currentUser.email || 'Non renseigné';
+            openModal('profileModal');
+        }
+
+        async function checkSession() {
+            const savedToken = localStorage.getItem('token');
+            const savedUser = localStorage.getItem('user');
+            if (savedToken && savedUser) {
+                token = savedToken;
+                currentUser = JSON.parse(savedUser);
+                try {
+                    const response = await fetch(`${API_URL}/api/auth/verify`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) updateUIBasedOnAuth();
+                    else {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        currentUser = null;
+                        token = null;
+                        updateUIBasedOnAuth();
+                    }
+                } catch (error) { console.error('Erreur vérification session:', error); }
+            }
+        }
+
+        window.login = login;
+        window.register = register;
+        window.logout = logout;
+
+        // Dans index.html, fonction envoyerContact()
+async function envoyerContact() {
+    const nom = document.getElementById('contactNom').value;
+    const email = document.getElementById('contactEmail').value;
+    const telephone = document.getElementById('contactTelephone').value;
+    const entreprise = document.getElementById('contactEntreprise').value;
+    const message = document.getElementById('contactMessage').value;
+    
+    if (!nom || !email || !message) {
+        showNotification('Veuillez remplir le nom, email et message', true);
+        return;
+    }
+    
+    // Récupérer l'utilisateur connecté (peut être null)
+    let userId = null;
+    const token = localStorage.getItem('token');
+    if (token) {
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            userId = user.id || null;
+        } catch(e) {}
+    }
+    
+    try {
+        const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                nom: nom,
+                email: email,
+                telephone: telephone || '',
+                entreprise: entreprise || '',
+                message: message
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showNotification('✅ Message envoyé ! Notre équipe vous répondra rapidement.');
+            // Vider le formulaire
+            document.getElementById('contactNom').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactTelephone').value = '';
+            document.getElementById('contactEntreprise').value = '';
+            document.getElementById('contactMessage').value = '';
+        } else {
+            showNotification(data.error || 'Erreur lors de l\'envoi', true);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de connexion au serveur', true);
+    }
+}
+        async function inscrireNewsletter() { 
+            const email = document.getElementById('newsletterEmail').value; 
+            if (!email) return alert('Email requis'); 
+            alert('✅ Inscription réussie !'); 
+            document.getElementById('newsletterEmail').value = ''; 
+        }
+        function openModal(id) { document.getElementById(id).classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        function showRegisterPanel() { document.getElementById('loginPanel').classList.add('hidden'); document.getElementById('registerPanel').classList.remove('hidden'); document.getElementById('authTitle').innerText = currentLang === 'fr' ? 'Inscription' : 'Sign up'; }
+        function showLoginPanel() { document.getElementById('loginPanel').classList.remove('hidden'); document.getElementById('registerPanel').classList.add('hidden'); document.getElementById('authTitle').innerText = currentLang === 'fr' ? 'Connexion' : 'Login'; }
+        function switchService(id, btn) { document.querySelectorAll('.service-tab').forEach(b => b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.service-pane').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        
+        // Theme
+        let highContrast = false;
+        function toggleHighContrast() { highContrast = !highContrast; document.body.classList.toggle('high-contrast', highContrast); localStorage.setItem('highContrast', highContrast); }
+        function initTheme() { const saved = localStorage.getItem('theme'); if (saved === 'light') { document.documentElement.classList.remove('dark'); document.body.classList.add('light-mode'); document.getElementById('themeIcon').className = 'fas fa-sun text-yellow-400'; } else { document.documentElement.classList.add('dark'); document.body.classList.remove('light-mode'); document.getElementById('themeIcon').className = 'fas fa-moon text-blue-500'; } }
+        function toggleTheme() { const isDark = document.documentElement.classList.contains('dark'); if (isDark) { document.documentElement.classList.remove('dark'); document.body.classList.add('light-mode'); localStorage.setItem('theme', 'light'); document.getElementById('themeIcon').className = 'fas fa-sun text-yellow-400'; } else { document.documentElement.classList.add('dark'); document.body.classList.remove('light-mode'); localStorage.setItem('theme', 'dark'); document.getElementById('themeIcon').className = 'fas fa-moon text-blue-500'; } }
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme); initTheme();
+        document.getElementById('accessibilityBtn')?.addEventListener('click', toggleHighContrast);
+        
+        let userDropdownOpen = false;
+        function toggleUserDropdown() { const d = document.getElementById('userDropdown'); userDropdownOpen = !userDropdownOpen; d.classList.toggle('show', userDropdownOpen); }
+        document.addEventListener('click', (e) => { if (!e.target.closest('.user-menu')) document.getElementById('userDropdown')?.classList.remove('show'); });
+        
+        function initMap() { const map = L.map('neivos-map').setView([35.760128, 8.336658], 16); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map); L.marker([35.760128, 8.336658]).addTo(map).bindPopup('<b>NEIVOS GROUPE</b><br/>85-87 Rue de La Palestine<br/>Tunis 1002').openPopup(); }
+        
+        const observer = new IntersectionObserver(e => e.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold: 0.15 });
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => scrollBtn.classList.toggle('show', scrollY > 500));
+        scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        
+        document.addEventListener('DOMContentLoaded', () => { 
+            typeEffect(); 
+            initMap(); 
+            checkSession(); 
+            document.getElementById('loginBtn').addEventListener('click', () => openModal('authModal')); 
+            setLanguage('fr'); 
+        });
+        
+        const mobileBtn = document.getElementById('mobileMenuBtn'), mobilePanel = document.getElementById('mobileMenuPanel'), mobileOverlay = document.getElementById('mobileOverlay'), closeMobile = document.getElementById('closeMobileMenu');
+        function openMobileMenu() { mobilePanel.classList.add('open'); mobileOverlay.classList.add('open'); }
+        function closeMobileMenu() { mobilePanel.classList.remove('open'); mobileOverlay.classList.remove('open'); }
+        mobileBtn?.addEventListener('click', openMobileMenu); closeMobile?.addEventListener('click', closeMobileMenu); mobileOverlay?.addEventListener('click', closeMobileMenu);
+        document.querySelectorAll('.mobile-nav-link').forEach(link => { link.addEventListener('click', closeMobileMenu); });
+        document.getElementById('mobileThemeToggle')?.addEventListener('click', () => { toggleTheme(); closeMobileMenu(); });
+        function closeImageModal() { document.getElementById('imageModal').classList.add('opacity-0', 'invisible'); }
+    </script>
+</body>
+</html>
