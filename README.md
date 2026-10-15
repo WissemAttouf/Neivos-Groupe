@@ -99,12 +99,6 @@ Copiez `.env.example` vers `.env` s’il est présent, puis configurez les param
 
 **Sécurité :** ne commitez jamais le fichier `.env`, les mots de passe, les jetons JWT ou les identifiants de services.
 
-## Auteur
-
-**Wissem Attouf** — Ingénieur logiciel | Développeur Full Stack  
-[GitHub](https://github.com/WissemAttouf) · [LinkedIn](https://www.linkedin.com/in/wissem-attouf-452509226/) · [Portfolio](https://wissem-portfolio.vercel.app/) · [E-mail](mailto:wattouf35@gmail.com)
-
----
 
 ## 📸 Captures d’écran
 
@@ -149,3 +143,12 @@ Copiez `.env.example` vers `.env` s’il est présent, puis configurez les param
   <br><strong>Interface — aperçu 7</strong>
   <br><em>Dernière vue de la galerie de présentation.</em>
 </p>
+
+---
+
+## Auteur
+
+**Wissem Attouf** — Ingénieur logiciel | Développeur Full Stack  
+[GitHub](https://github.com/WissemAttouf) · [LinkedIn](https://www.linkedin.com/in/wissem-attouf-452509226/) · [Portfolio](https://wissem-portfolio.vercel.app/) · [E-mail](mailto:wattouf35@gmail.com)
+
+---
