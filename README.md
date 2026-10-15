@@ -1,4 +1,4 @@
-# Neivos Groupe — Plateforme web et services numériques
+# 💻 Neivos Groupe — Plateforme web et services numériques
 
 Plateforme web combinant une vitrine publique, des parcours clients et une interface d’administration connectée à un backend Node.js/Express et à une base de données MySQL.
 
@@ -11,26 +11,26 @@ Plateforme web combinant une vitrine publique, des parcours clients et une inter
 
 </p>
 
-## Présentation
+## 📌 Présentation
 
 Le projet propose une expérience web responsive pour présenter des services numériques et centraliser différentes interactions avec les clients. Le frontend communique avec un backend Node.js/Express qui gère les routes applicatives et la persistance des données.
 
-## Fonctionnalités
+## ✨ Fonctionnalités
 
-### Interface publique
+### 🌐 Interface publique
 - Présentation de l’entreprise, de ses services et de ses technologies.
 - Interface adaptée aux écrans mobiles et de bureau.
 - Navigation et interactions visuelles.
 - Accès aux parcours de connexion et d’inscription.
 
-### Espace client et administration
+### 🛡️ Espace client et administration
 - Parcours d’authentification et tableau de bord.
 - Routes d’administration protégées.
 - Gestion des services et des technologies.
 - Consultation des utilisateurs et des demandes enregistrées.
 - Outils de suivi et d’administration selon la configuration du projet.
 
-### Backend et intégrations
+### 🖥️ Backend et intégrations
 - API REST avec Node.js et Express.js.
 - Persistance MySQL via le client mysql2.
 - Authentification par JWT et hachage des mots de passe avec bcryptjs.
@@ -38,7 +38,7 @@ Le projet propose une expérience web responsive pour présenter des services nu
 - Notifications Discord via webhook ou bot selon la configuration.
 - Variables d’environnement pour les paramètres sensibles.
 
-## Technologies
+## 🛠️ Technologies
 
 | Domaine | Technologies |
 |---|---|
@@ -53,7 +53,7 @@ Le projet propose une expérience web responsive pour présenter des services nu
 | Outils | npm, Nodemon, Git |
 | Déploiement de la démo | Vercel |
 
-## Structure du dépôt
+## 🗂️ Structure du dépôt
 
 ```text
 Neivos-Groupe/
@@ -75,19 +75,19 @@ Neivos-Groupe/
 
 L’arborescence peut évoluer ; référez-vous aux fichiers présents dans le dépôt pour les détails exacts.
 
-## Démonstration
+## 🚀 Démonstration
 
 - **Application :** [neivos-groupe.vercel.app](https://neivos-groupe.vercel.app/)
 - **Code source :** [GitHub — Neivos-Groupe](https://github.com/WissemAttouf/Neivos-Groupe)
 
-## Installation locale
+## ⚙️ Installation locale
 
-### Prérequis
+### ⚙️ Prérequis
 - Node.js et npm
 - MySQL ou MariaDB
 - Git
 
-### Étapes
+### ⚙️ Étapes
 
 ```bash
 git clone https://github.com/WissemAttouf/Neivos-Groupe.git
@@ -146,7 +146,7 @@ Copiez `.env.example` vers `.env` s’il est présent, puis configurez les param
 
 ---
 
-## Auteur
+## 👨‍💻 Auteur
 
 **Wissem Attouf** — Ingénieur logiciel | Développeur Full Stack  
 [GitHub](https://github.com/WissemAttouf) · [LinkedIn](https://www.linkedin.com/in/wissem-attouf-452509226/) · [Portfolio](https://wissem-portfolio.vercel.app/) · [E-mail](mailto:wattouf35@gmail.com)
