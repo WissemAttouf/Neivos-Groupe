@@ -75,40 +75,6 @@ Neivos-Groupe/
 
 L’arborescence peut évoluer ; référez-vous aux fichiers présents dans le dépôt pour les détails exacts.
 
-## Captures d’écran
-
-Les captures ci-dessous illustrent l’interface de **Neivos Groupe**. Les fichiers sont disponibles dans [docs/img/](docs/img/).
-
-<p align="center">
-  <img src="docs/img/neivos.PNG" alt="Capture d’écran de Neivos Groupe" width="800">
-</p>
-
-<p align="center">
-  <img src="docs/img/neivos1.PNG" alt="Capture d’écran de Neivos Groupe — vue 2" width="800">
-</p>
-
-<p align="center">
-  <img src="docs/img/neivos3.PNG" alt="Capture d’écran de Neivos Groupe — vue 3" width="800">
-</p>
-
-<p align="center">
-  <img src="docs/img/neivos4.PNG" alt="Capture d’écran de Neivos Groupe — vue 4" width="800">
-</p>
-
-<p align="center">
-  <img src="docs/img/neivos6.PNG" alt="Capture d’écran de Neivos Groupe — vue 5" width="800">
-</p>
-
-<p align="center">
-  <img src="docs/img/neivos7.PNG" alt="Capture d’écran de Neivos Groupe — vue 6" width="800">
-</p>
-
-<p align="center">
-  <img src="docs/img/neivos9.PNG" alt="Capture d’écran de Neivos Groupe — vue 7" width="800">
-</p>
-
-> **Note :** les noms des fichiers sont sensibles aux majuscules et minuscules. Conserve exactement l’extension `.PNG` utilisée dans le dépôt.
-
 ## Démonstration
 
 - **Application :** [neivos-groupe.vercel.app](https://neivos-groupe.vercel.app/)
@@ -137,7 +103,6 @@ Copiez `.env.example` vers `.env` s’il est présent, puis configurez les param
 
 **Wissem Attouf** — Ingénieur logiciel | Développeur Full Stack  
 [GitHub](https://github.com/WissemAttouf) · [LinkedIn](https://www.linkedin.com/in/wissem-attouf-452509226/) · [Portfolio](https://wissem-portfolio.vercel.app/) · [E-mail](mailto:wattouf35@gmail.com)
-
 
 ---
 
