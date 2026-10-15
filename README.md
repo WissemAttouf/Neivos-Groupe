@@ -77,48 +77,37 @@ L’arborescence peut évoluer ; référez-vous aux fichiers présents dans le d
 
 ## Captures d’écran
 
-Les captures sont regroupées par parcours fonctionnel. Déposez les images dans le dossier [`docs/img/`](docs/img/) et conservez exactement les noms référencés ci-dessous.
-
-### 1. Présentation publique
+Les captures ci-dessous illustrent l’interface de **Neivos Groupe**. Les fichiers sont disponibles dans [docs/img/](docs/img/).
 
 <p align="center">
-  <img src="docs/img/accueil.png" alt="Page d’accueil de Neivos Groupe" width="800">
+  <img src="docs/img/neivos.PNG" alt="Capture d’écran de Neivos Groupe" width="800">
 </p>
-<p align="center">
-  <img src="docs/img/services.png" alt="Présentation des services de Neivos Groupe" width="800">
-  &nbsp;&nbsp;
-  <img src="docs/img/technologies.png" alt="Technologies présentées sur la plateforme" width="800">
-</p>
-
-### 2. Authentification
 
 <p align="center">
-  <img src="docs/img/connexion.png" alt="Écran de connexion" width="380">
-  &nbsp;&nbsp;
-  <img src="docs/img/inscription.png" alt="Écran d’inscription" width="380">
+  <img src="docs/img/neivos1.PNG" alt="Capture d’écran de Neivos Groupe — vue 2" width="800">
 </p>
-
-### 3. Espace client et tableau de bord
 
 <p align="center">
-  <img src="docs/img/dashboard.png" alt="Tableau de bord client" width="800">
+  <img src="docs/img/neivos3.PNG" alt="Capture d’écran de Neivos Groupe — vue 3" width="800">
 </p>
 
-### 4. Administration
-
 <p align="center">
-  <img src="docs/img/administration.png" alt="Interface d’administration" width="800">
-</p>
-<p align="center">
-  <img src="docs/img/gestion-services.png" alt="Gestion des services" width="380">
-  &nbsp;&nbsp;
-  <img src="docs/img/utilisateurs.png" alt="Gestion des utilisateurs" width="380">
-</p>
-<p align="center">
-  <img src="docs/img/demandes.png" alt="Consultation des demandes enregistrées" width="800">
+  <img src="docs/img/neivos4.PNG" alt="Capture d’écran de Neivos Groupe — vue 4" width="800">
 </p>
 
-> **Important :** ces noms sont des suggestions. Après avoir téléversé tes captures, remplace les chemins ci-dessus par les noms exacts des fichiers si nécessaire. GitHub distingue les majuscules et les minuscules.
+<p align="center">
+  <img src="docs/img/neivos6.PNG" alt="Capture d’écran de Neivos Groupe — vue 5" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos7.PNG" alt="Capture d’écran de Neivos Groupe — vue 6" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos9.PNG" alt="Capture d’écran de Neivos Groupe — vue 7" width="800">
+</p>
+
+> **Note :** les noms des fichiers sont sensibles aux majuscules et minuscules. Conserve exactement l’extension `.PNG` utilisée dans le dépôt.
 
 ## Démonstration
 
