@@ -75,6 +75,51 @@ Neivos-Groupe/
 
 L’arborescence peut évoluer ; référez-vous aux fichiers présents dans le dépôt pour les détails exacts.
 
+## Captures d’écran
+
+Les captures sont regroupées par parcours fonctionnel. Déposez les images dans le dossier [`docs/img/`](docs/img/) et conservez exactement les noms référencés ci-dessous.
+
+### 1. Présentation publique
+
+<p align="center">
+  <img src="docs/img/accueil.png" alt="Page d’accueil de Neivos Groupe" width="800">
+</p>
+<p align="center">
+  <img src="docs/img/services.png" alt="Présentation des services de Neivos Groupe" width="800">
+  &nbsp;&nbsp;
+  <img src="docs/img/technologies.png" alt="Technologies présentées sur la plateforme" width="800">
+</p>
+
+### 2. Authentification
+
+<p align="center">
+  <img src="docs/img/connexion.png" alt="Écran de connexion" width="380">
+  &nbsp;&nbsp;
+  <img src="docs/img/inscription.png" alt="Écran d’inscription" width="380">
+</p>
+
+### 3. Espace client et tableau de bord
+
+<p align="center">
+  <img src="docs/img/dashboard.png" alt="Tableau de bord client" width="800">
+</p>
+
+### 4. Administration
+
+<p align="center">
+  <img src="docs/img/administration.png" alt="Interface d’administration" width="800">
+</p>
+<p align="center">
+  <img src="docs/img/gestion-services.png" alt="Gestion des services" width="380">
+  &nbsp;&nbsp;
+  <img src="docs/img/utilisateurs.png" alt="Gestion des utilisateurs" width="380">
+</p>
+<p align="center">
+  <img src="docs/img/demandes.png" alt="Consultation des demandes enregistrées" width="800">
+</p>
+
+> **Important :** ces noms sont des suggestions. Après avoir téléversé tes captures, remplace les chemins ci-dessus par les noms exacts des fichiers si nécessaire. GitHub distingue les majuscules et les minuscules.
+
 ## Démonstration
 
 - **Application :** [neivos-groupe.vercel.app](https://neivos-groupe.vercel.app/)
