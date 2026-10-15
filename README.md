@@ -4,10 +4,10 @@ Plateforme web combinant une vitrine publique, des parcours clients et une inter
 
 <p align="center">
 
-[](https://neivos-groupe.vercel.app/)
-[](https://nodejs.org/)
-[](https://expressjs.com/)
-[](https://www.mysql.com/)
+[![Démo en ligne](https://img.shields.io/badge/Démo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://neivos-groupe.vercel.app/)
+[![Node.js](https://img.shields.io/badge/Node.js-Backend-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express.js-API-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-Base%20de%20données-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 
 </p>
 
@@ -76,6 +76,68 @@ Neivos-Groupe/
 L’arborescence peut évoluer ; référez-vous aux fichiers présents dans le dépôt pour les détails exacts.
 
 ## Captures d’écran
+
+Les captures ci-dessous illustrent l’interface de **Neivos Groupe**. Les fichiers sont disponibles dans [docs/img/](docs/img/).
+
+<p align="center">
+  <img src="docs/img/neivos.PNG" alt="Capture d’écran de Neivos Groupe" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos1.PNG" alt="Capture d’écran de Neivos Groupe — vue 2" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos3.PNG" alt="Capture d’écran de Neivos Groupe — vue 3" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos4.PNG" alt="Capture d’écran de Neivos Groupe — vue 4" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos6.PNG" alt="Capture d’écran de Neivos Groupe — vue 5" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos7.PNG" alt="Capture d’écran de Neivos Groupe — vue 6" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/img/neivos9.PNG" alt="Capture d’écran de Neivos Groupe — vue 7" width="800">
+</p>
+
+> **Note :** les noms des fichiers sont sensibles aux majuscules et minuscules. Conserve exactement l’extension `.PNG` utilisée dans le dépôt.
+
+## Démonstration
+
+- **Application :** [neivos-groupe.vercel.app](https://neivos-groupe.vercel.app/)
+- **Code source :** [GitHub — Neivos-Groupe](https://github.com/WissemAttouf/Neivos-Groupe)
+
+## Installation locale
+
+### Prérequis
+- Node.js et npm
+- MySQL ou MariaDB
+- Git
+
+### Étapes
+
+```bash
+git clone https://github.com/WissemAttouf/Neivos-Groupe.git
+cd Neivos-Groupe
+npm install
+```
+
+Copiez `.env.example` vers `.env` s’il est présent, puis configurez les paramètres de base de données et les secrets requis. Importez le schéma SQL fourni dans `database/` si le projet l’utilise. Consultez les scripts de `package.json` pour identifier la commande de démarrage adaptée à votre version du dépôt.
+
+**Sécurité :** ne commitez jamais le fichier `.env`, les mots de passe, les jetons JWT ou les identifiants de services.
+
+## Auteur
+
+**Wissem Attouf** — Ingénieur logiciel | Développeur Full Stack  
+[GitHub](https://github.com/WissemAttouf) · [LinkedIn](https://www.linkedin.com/in/wissem-attouf-452509226/) · [Portfolio](https://wissem-portfolio.vercel.app/) · [E-mail](mailto:wattouf35@gmail.com)
+
 
 ---
 
